@@ -1,0 +1,3 @@
+# Solo para volver a ejecutar la suite histórica de la cola del primer encargo.
+-r requirements.txt
+psycopg[binary]==3.3.6

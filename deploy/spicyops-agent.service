@@ -1,0 +1,28 @@
+[Unit]
+Description=SpicyOps agente (simulador; integración física pendiente)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=spicyops
+Group=spicyops
+WorkingDirectory=/opt/spicyops
+ExecStart=/opt/spicyops/venv/bin/python -m agent --config /var/lib/spicyops/agent.json
+Restart=on-failure
+RestartSec=10
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/spicyops
+MemoryMax=96M
+TasksMax=16
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

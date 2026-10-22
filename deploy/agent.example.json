@@ -1,0 +1,10 @@
+{
+  "mode": "simulator",
+  "url": "https://PANEL_PENDIENTE.invalid",
+  "site": 0,
+  "agent": "UUID_PENDIENTE",
+  "token": "CONFIGURAR_FUERA_DE_GIT",
+  "state_file": "simulator.sqlite3",
+  "allow_loopback_http": false,
+  "routers": {"0": {"allowed_ips": ["198.51.100.20"]}}
+}

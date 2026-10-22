@@ -1,0 +1,18 @@
+{% load portal_tags %}
+<section class="diagnostic" data-diagnostic data-start="{% url 'diagnose' locality.id %}" data-status="{% url 'diagnostic_status' locality.id %}" data-running="{{ locality.diagnostic.running|yesno:'true,false' }}">
+  <form class="diagnostic-form" method="post" action="{% url 'diagnose' locality.id %}">
+    {% csrf_token %}<button class="button secondary diagnostic-button"{% if locality.diagnostic.running %} disabled{% endif %}>Diagnosticar</button>
+  </form>
+  {% if not locality.connected %}<p class="field-help">Localidad desconectada. Si retiraste sus accesos, vuelve a introducirlos en Configurar.</p>{% endif %}
+  <p class="diagnostic-error inline-error" role="alert" hidden></p>
+  <div class="diagnostic-result"{% if not locality.diagnostic %} hidden{% endif %}>
+    <p class="diagnostic-date subtle">{% if locality.diagnostic.running %}Diagnóstico en curso{% else %}Resultado guardado (histórico){% endif %} · {{ locality.diagnostic.started|diagnostic_datetime }}{% if locality.diagnostic.finished %} · Fin: {{ locality.diagnostic.finished|diagnostic_datetime }}{% endif %}</p>
+    <p class="diagnostic-stale inline-error"{% if not locality.diagnostic.stale %} hidden{% endif %}>Resultado desactualizado: cambió la configuración. Repite el diagnóstico.</p>
+    <ol class="diagnostic-stages">
+    {% for step in locality.diagnostic.stages %}<li data-state="{{ step.state }}"><div><strong>{{ step.label }}</strong><span class="diagnostic-state">{% if step.state == 'no_comprobada' %}No comprobada{% else %}{{ step.state|capfirst }}{% endif %}</span></div><p>{{ step.message }}</p></li>{% endfor %}
+    </ol>
+    <p class="diagnostic-summary" role="status" aria-live="polite">{{ locality.diagnostic.summary }}</p>
+    <p class="field-help">Solo acceso de lectura. No comprueba permisos de escritura ni el acceso a internet de los clientes. No incorpora datos a Analytics o Clientes.</p>
+    <a class="text-button" href="{% url 'configure' locality.id %}">Revisar en Configurar</a>
+  </div>
+</section>

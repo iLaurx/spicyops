@@ -1,0 +1,3 @@
+{% extends 'ops/base.html' %}{% block content %}<section class="card narrow"><p class="eyebrow">Acceso al laboratorio</p><h1>Bienvenido a SpicyOps</h1><p>Administra clientes ficticios y consulta cada operación.</p>
+{% if limited %}<p class="error" role="alert">Demasiados intentos. Espera cinco minutos.</p>{% endif %}
+<form method="post">{% csrf_token %}{{ form.as_p }}<button>Entrar al panel</button></form></section>{% endblock %}

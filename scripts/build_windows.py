@@ -1,0 +1,18 @@
+from pathlib import Path
+import argparse
+import subprocess
+import sys
+from PIL import Image, ImageDraw
+
+root = Path(__file__).resolve().parents[1]
+parser = argparse.ArgumentParser()
+parser.add_argument('--dist-dir', default='dist')
+parser.add_argument('--work-dir', default='build')
+args = parser.parse_args()
+icon = Image.new('RGBA',(256,256),(0,0,0,0))
+draw = ImageDraw.Draw(icon)
+draw.rounded_rectangle((0,0,255,255),radius=70,fill='#5965ee')
+draw.polygon([(147,48),(76,141),(128,141),(109,209),(187,101),(128,101)],fill='white')
+icon.save(root/'portal/static/portal/app.ico',sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)])
+subprocess.run([sys.executable,'-m','PyInstaller','--noconfirm','--distpath',args.dist_dir,
+    '--workpath',args.work_dir,'SpicyOps.spec'],cwd=root,check=True)

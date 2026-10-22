@@ -1,0 +1,13 @@
+# Fuentes locales con contraseñas, claves de radio y respaldos sensibles.
+/config-mikro/
+/config-antenasyclientes/
+/.venv/
+/.local/
+/.env
+__pycache__/
+*.py[cod]
+*.sqlite3*
+/staticfiles/
+/staticfiles-portal/
+/dist/
+/build/
