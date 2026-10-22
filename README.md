@@ -2,6 +2,8 @@
 
 Programa para conectar varias localidades por **SSH a Raspberry Pi**, leer su MikroTik y generar automáticamente **Analytics** y **Clientes**. El usuario rechazó el MVP anterior de captura manual y simulación; este es el alcance vigente.
 
+La revisión de lecturas del 22 de octubre de 2026 optimiza únicamente el recorrido del historial en Analytics, conservando cálculos y avisos. Ejecutable verificado en `dist/lecturas-optimizadas/SpicyOps/SpicyOps.exe` y ZIP en `dist/lecturas-optimizadas/SpicyOps-Windows.zip`, sin sustituir las entregas anteriores. [Evidencia y reproducción](docs/optimizacion-lecturas.md).
+
 ## Usar el programa
 
 La versión verificada con diagnóstico por etapas y sincronización automática se entrega en `dist/diagnostico/SpicyOps/SpicyOps.exe` y `dist/SpicyOps-diagnostico-Windows.zip`. Esta salida alternativa conserva las distribuciones anteriores y cualquier instancia abierta. Al extraer el ZIP, abre `SpicyOps/SpicyOps.exe` y conserva `_internal` junto a él.

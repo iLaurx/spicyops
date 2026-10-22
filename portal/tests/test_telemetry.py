@@ -91,3 +91,47 @@ class TelemetryTests(SimpleTestCase):
             self.assertIsNone(rows[0]['daily_bytes'])
             self.assertFalse(summary['ready'])
         self.assertEqual(estimate_uptime([])[0],[])
+
+    def test_estimate_keeps_latest_order_and_history_unchanged(self):
+        a = normalize(raw('100/200', '1h'), 10000)
+        b = normalize(raw('200/400', '1h1m'), 10060)
+        for sample in (a, b):
+            sample['clients'].append(dict(sample['clients'][0], id='*2', fingerprint='other'))
+        b['clients'].reverse()
+        original = copy.deepcopy([a, b])
+        rows, summary = estimate_uptime([a, b])
+        self.assertEqual([r['fingerprint'] for r in rows], ['other', a['clients'][0]['fingerprint']])
+        self.assertEqual(summary['estimated_count'], 2)
+        self.assertEqual([a, b], original)
+
+    def test_estimate_nearest_invalid_read_determines_note(self):
+        missing = normalize(raw('100/200', '1h'), 10000)
+        reset = normalize(raw('900/200', '1h1m'), 10060)
+        latest = normalize(raw('200/400', '1h2m'), 10120)
+        missing['clients'] = []
+        rows, _ = estimate_uptime([missing, reset, latest])
+        self.assertEqual(rows[0]['estimate_note'], 'Contador reiniciado; edad desconocida')
+        reset['clients'] = []
+        rows, _ = estimate_uptime([missing, reset, latest])
+        self.assertEqual(rows[0]['estimate_note'], 'Cola nueva o modificada; edad del contador desconocida')
+
+    def test_estimate_stops_at_boot_boundary_and_compares_both_directions(self):
+        a = normalize(raw('900/200', '1h'), 10000)
+        b = normalize(raw('200/400', '1h1m'), 10060)
+        # El total crece pero la subida disminuye: sigue siendo un reset.
+        rows, _ = estimate_uptime([a, b])
+        self.assertIsNone(rows[0]['daily_bytes'])
+        a['identity'] = 'Router anterior'
+        rows, _ = estimate_uptime([a, b])
+        self.assertAlmostEqual(rows[0]['daily_bytes'], 600/3660*86400)
+
+    def test_estimate_unknown_previous_counter_and_ambiguous_priority(self):
+        a = normalize(raw('100/200', '1h'), 10000)
+        b = normalize(raw('200/400', '1h1m'), 10060)
+        a['clients'][0].update(upload_bytes=None, download_bytes=None, bytes=None)
+        rows, _ = estimate_uptime([a, b])
+        self.assertIsNotNone(rows[0]['daily_bytes'])
+        b['uptime'] = 30
+        b['clients'][0].update(ambiguous=True, bytes=None)
+        rows, _ = estimate_uptime([a, b])
+        self.assertEqual(rows[0]['estimate_note'], 'Cola ambigua')

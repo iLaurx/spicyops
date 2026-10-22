@@ -124,22 +124,30 @@ def estimate_uptime(history):
             row['estimate_note'] = 'Cola ambigua' if client['ambiguous'] else 'Contador no disponible'
         elif latest['uptime'] < 60:
             row['estimate_note'] = 'Espera al menos un minuto desde el encendido'
-        else:
-            # El historial solo permite descartar resets/cambios conocidos, no calcula el promedio.
-            for previous in reversed(history[:-1]):
-                if not same_boot(previous, latest):
-                    break
-                old = next((c for c in previous['clients'] if c['fingerprint'] == client['fingerprint']), None)
-                if old is None:
-                    row['estimate_note'] = 'Cola nueva o modificada; edad del contador desconocida'
-                    break
-                if any(old[k] is not None and old[k] > client[k] for k in ('upload_bytes','download_bytes')):
-                    row['estimate_note'] = 'Contador reiniciado; edad desconocida'
-                    break
-            if row['estimate_note'] == 'Desde encendido · aprox.':
-                row['daily_bytes'] = client['bytes'] / latest['uptime'] * 86400
-                row['monthly_bytes'] = row['daily_bytes'] * 30
         rows.append(row)
+    # Un índice por lectura, descartado al avanzar: O(historial * clientes),
+    # sin conservar índices de todo el historial ni modificar las lecturas.
+    pending = [row for row in rows if row['estimate_note'] == 'Desde encendido · aprox.']
+    for previous in reversed(history[:-1]):
+        if not pending or not same_boot(previous, latest):
+            break
+        previous_clients = {}
+        for client in previous['clients']:
+            previous_clients.setdefault(client['fingerprint'], client)
+        remaining = []
+        for row in pending:
+            old = previous_clients.get(row['fingerprint'])
+            if old is None:
+                row['estimate_note'] = 'Cola nueva o modificada; edad del contador desconocida'
+            elif any(old[k] is not None and old[k] > row[k] for k in ('upload_bytes','download_bytes')):
+                row['estimate_note'] = 'Contador reiniciado; edad desconocida'
+            else:
+                remaining.append(row)
+        pending = remaining
+    # El historial solo descarta resets/cambios; el promedio sigue usando uptime.
+    for row in pending:
+        row['daily_bytes'] = row['bytes'] / latest['uptime'] * 86400
+        row['monthly_bytes'] = row['daily_bytes'] * 30
     ready = [row for row in rows if row['daily_bytes'] is not None]
     return rows, {'ready': bool(ready), 'estimated_count': len(ready),
         'daily_bytes': sum(row['daily_bytes'] for row in ready) if ready else None,

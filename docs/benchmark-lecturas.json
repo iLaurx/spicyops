@@ -1,0 +1,96 @@
+{
+  "baseline": "8b73d789e8ac63775bdeb4821aca9caa5208d19c",
+  "python": "3.12.14",
+  "repeats": 5,
+  "equivalent_cases": 161,
+  "calculations": [
+    {
+      "clients": 20,
+      "samples": 120,
+      "before_ms": 4.065,
+      "after_ms": 1.239,
+      "before_client_visits": 25010,
+      "after_client_visits": 2400
+    },
+    {
+      "clients": 100,
+      "samples": 240,
+      "before_ms": 97.841,
+      "after_ms": 12.887,
+      "before_client_visits": 1207050,
+      "after_client_visits": 24000
+    },
+    {
+      "clients": 300,
+      "samples": 240,
+      "before_ms": 795.962,
+      "after_ms": 38.657,
+      "before_client_visits": 10791150,
+      "after_client_visits": 72000
+    },
+    {
+      "clients": 100,
+      "samples": 1440,
+      "before_ms": 866.694,
+      "after_ms": 78.058,
+      "before_client_visits": 7267050,
+      "after_client_visits": 144000
+    }
+  ],
+  "state": {
+    "localities": 2,
+    "clients_per_locality": 100,
+    "samples_per_locality": 240,
+    "encrypted_bytes": 21250788,
+    "read_ms": 183.471,
+    "update_ms": 383.714
+  },
+  "pages": [
+    {
+      "url": "/?site=0",
+      "before_ms": 328.72,
+      "after_ms": 196.023,
+      "state_reads": 1,
+      "response_bytes": 49928
+    },
+    {
+      "url": "/clientes/?site=all",
+      "before_ms": 245.99,
+      "after_ms": 258.761,
+      "state_reads": 1,
+      "response_bytes": 731351
+    },
+    {
+      "url": "/conexiones/",
+      "before_ms": 176.623,
+      "after_ms": 176.061,
+      "state_reads": 1,
+      "response_bytes": 10387
+    }
+  ],
+  "idle_tick": {
+    "state_reads": 1,
+    "ms": 177.485
+  },
+  "manual_refresh": {
+    "state_reads": 2,
+    "connector_calls": 1
+  },
+  "automatic_refresh": {
+    "state_reads": 3,
+    "connector_calls": 1
+  },
+  "controlled_remote_reader": {
+    "api_reads": 6,
+    "paths": [
+      "/system/resource/print",
+      "/system/identity/print",
+      "/queue/simple/print",
+      "/queue/simple/print",
+      "/ip/firewall/address-list/print",
+      "/system/resource/print"
+    ],
+    "result_bytes": 351,
+    "real_network": false
+  }
+}
