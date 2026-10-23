@@ -9,6 +9,10 @@ import ipaddress
 import socket
 from functools import partial
 
+# El conector antepone exactamente este mismo módulo al lector autónomo.
+if 'restriction_state' not in globals():
+    from portal.router_contract import restriction_state, individual_target, queue_identity, queue_safety, RESERVED, inclusion_values_valid
+
 
 class OperationRejected(Exception):
     pass
@@ -18,7 +22,7 @@ def enabled(value):
     return value in (True, 'true', 'yes', '1')
 
 
-def change_morosity(api, queues, restrictions, identity, operation):
+def change_morosity(api, queues, restrictions, identity, operation, inclusions=()):
     """Solo una IPv4 individual ya inventariada; nunca cambia colas ni firewall."""
     if (operation.get('action') not in ('suspend', 'restore') or
             operation.get('identity') != identity):
@@ -27,39 +31,30 @@ def change_morosity(api, queues, restrictions, identity, operation):
         address = ipaddress.IPv4Address(operation['ip'])
     except (KeyError, ValueError):
         raise OperationRejected('client_changed') from None
-    if int(str(address).split('.')[-1]) in {0, 1, 2, 3, 4, 5, 6, 50, 90, 255}:
-        raise OperationRejected('client_changed')
     matching = []
     for queue in queues:
         try:
-            target = ipaddress.ip_network(queue.get('target', ''), strict=True)
+            target = ipaddress.IPv4Address(individual_target(queue))
         except ValueError:
             continue
-        if address in target:
+        if address == target:
             matching.append((queue, target))
-    individual = [(q, n) for q, n in matching if n.prefixlen == 32]
+    individual = matching
     if len(individual) != 1:
         raise OperationRejected('client_changed')
     queue, _ = individual[0]
+    ips, ids = queue_safety(queues)
+    if ips.get(str(address)) != 1 or ids.get(str(queue.get('.id', ''))) != 1:
+        raise OperationRejected('client_changed')
+    if int(str(address).split('.')[-1]) in RESERVED and (
+            queue_identity(queue, str(address)) not in inclusions or not inclusion_values_valid(queue)):
+        raise OperationRejected('client_changed')
     if (queue.get('.id') != operation.get('id') or queue.get('name', '') != operation.get('name') or
             enabled(queue.get('disabled')) or enabled(queue.get('invalid'))):
         raise OperationRejected('client_changed')
-    entries = []
-    for entry in restrictions:
-        if entry.get('list') != 'Morosos':
-            continue
-        try:
-            network = ipaddress.ip_network(entry['address'], strict=False)
-        except (ValueError, KeyError):
-            continue
-        if address in network:
-            # No tocar subredes, rangos ni entradas dinámicas que afectan a otros.
-            if network.prefixlen != 32 or enabled(entry.get('dynamic')):
-                if not enabled(entry.get('disabled')):
-                    raise OperationRejected('restriction_ambiguous')
-                continue
-            entries.append(entry)
-    if len(entries) > 1:
+    state = restriction_state(restrictions, str(address))
+    entries = state['entries']
+    if state['unsafe']:
         raise OperationRejected('restriction_ambiguous')
     desired = operation['action'] == 'suspend'
     current = bool(entries and not enabled(entries[0].get('disabled')))
@@ -143,18 +138,11 @@ def collect(config, connect=None):
         restriction_columns = '.id,list,address,disabled,dynamic'
         restrictions = read('/ip/firewall/address-list/print', **{'.proplist': restriction_columns})
         if 'morosity' in config:
-            change_morosity(api, queues, restrictions, identity['name'], config['morosity'])
+            change_morosity(api, queues, restrictions, identity['name'], config['morosity'], config.get('inclusions', ()))
             restrictions = read('/ip/firewall/address-list/print', **{'.proplist': restriction_columns})
             address = ipaddress.IPv4Address(config['morosity']['ip'])
-            active = False
-            for entry in restrictions:
-                if entry.get('list') != 'Morosos' or enabled(entry.get('disabled')):
-                    continue
-                try:
-                    active = active or address in ipaddress.ip_network(entry['address'], strict=False)
-                except (KeyError, ValueError):
-                    continue
-            if active != (config['morosity']['action'] == 'suspend'):
+            state = restriction_state(restrictions, str(address))
+            if state['unsafe'] or state['active'] != (config['morosity']['action'] == 'suspend'):
                 raise OperationRejected('write_unconfirmed')
         after = read('/system/resource/print', **{'.proplist': 'uptime'})[0]
         resource.update(identity=identity['name'], uptime_start=resource['uptime'], uptime=after['uptime'], board=resource.pop('board-name', ''))

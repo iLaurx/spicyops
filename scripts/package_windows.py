@@ -37,6 +37,11 @@ Clientes > Suspender permite suspender o reactivar con un interruptor, previa
 confirmación de cliente e IP. Es un cambio real a la lista Morosos: requiere
 cuenta API con escritura y reglas de bloqueo existentes. No configura firewall.
 El estado de la lista no acredita por sí solo corte o reconexión físicos.
+Clientes > Revisar colas excluidas permite incluir una cola individual valida
+filtrada por infraestructura y revertir la excepcion. No crea clientes manuales
+ni escribe al router. Los rangos/subredes y restricciones activas ambiguas de
+Morosos bloquean cambios individuales. Un resultado incierto exige sincronizar.
+Las comunicaciones tienen un presupuesto total de 60 segundos, incluido DNS.
 ''',encoding='utf-8')
 for file in folder.rglob('*'):
     if file.is_file():

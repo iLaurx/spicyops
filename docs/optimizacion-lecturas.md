@@ -1,5 +1,7 @@
 # Revisión de consultas y lecturas — 22 de octubre de 2026
 
+**Revisión posterior del mismo día:** la [auditoría de correcciones](auditoria-20261022.md) conserva el recorrido lineal y corrige resets entre lecturas consecutivas. Además, elimina la lectura completa en cada tick inactivo del coordinador mediante invalidación por firma del archivo. Las filas de coste/decisión siguientes describen el estado anterior a esa auditoría.
+
 Se revisó el producto Windows en `portal/`, siguiendo AGENTS.md, README y el encargo vigente. El único cambio de producción está en `portal/telemetry.py:estimate_uptime`. No se accedió al estado privado, credenciales, carpetas sensibles ni equipos reales. No se añadieron dependencias ni PostgreSQL.
 
 ## Problema comprobado y cambio

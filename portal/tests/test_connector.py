@@ -127,7 +127,10 @@ class ConnectorTests(SimpleTestCase):
     def test_auth_error_is_sanitized(self,client):
         client.return_value.connect.side_effect=paramiko.AuthenticationException('SENSITIVE_TEST_ONLY')
         profile={'host':'127.0.0.1','port':22,'ssh_user':'test','ssh_password':'not_real'}
-        with self.assertRaises(ConnectionFailure) as caught:collect(profile)
+        with patch('portal.connector.resolve_bounded', return_value=[(socket.AF_INET, socket.SOCK_STREAM, 6, '', ('127.0.0.1',22))]), \
+                patch('portal.connector.socket.socket'), self.assertRaises(ConnectionFailure) as caught:
+            collect(profile)
+        self.assertTrue(client.return_value.connect.called)
         self.assertNotIn('SENSITIVE_TEST_ONLY',str(caught.exception))
         self.assertTrue(client.return_value.close.called)
 

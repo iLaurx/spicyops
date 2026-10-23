@@ -55,6 +55,25 @@ class Store:
     def read(self):
         with locked(): return self._read()
 
+    def schedule(self, previous=None):
+        """Solo conserva programación sin historial ni credenciales entre ticks.
+
+        La firma se obtiene bajo el mismo bloqueo que reemplaza el archivo;
+        cambios de cualquier instancia invalidan la instantánea pequeña.
+        """
+        with locked():
+            try:
+                stat = self.path.stat()
+                signature = (stat.st_mtime_ns, stat.st_ctime_ns, stat.st_size, stat.st_ino)
+            except FileNotFoundError:
+                signature = None
+            if previous is not None and previous[0] == signature:
+                return previous
+            profiles = [{**{k: p.get(k) for k in ('id', 'connected', 'operation_active', 'busy_until')},
+                         'automatic': p.get('automatic', {})}
+                        for p in self._read()['profiles'].values()]
+            return signature, profiles
+
     def update(self, fn):
         with locked():
             data = self._read()

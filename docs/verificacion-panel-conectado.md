@@ -1,5 +1,7 @@
 # Verificación del rework: SpicyOps para Windows
 
+**Actualización 22/10/2026:** [auditoría vigente de Morosos, Analytics, inventario, plazos y coordinador](auditoria-20261022.md). La entrega aislada `dist/auditoria-20261022` tiene 98 pruebas correctas y verificación del EXE. Los resultados siguientes conservan su fecha y alcance históricos.
+
 Fecha: 16/10/2026, America/Mexico_City. El usuario reemplazó la demo de alta manual por conexión Raspberry → MikroTik e importación automática. Aceptó un programa Windows para aprovechar su acceso SSH por LAN/Tailscale.
 
 ## Ampliación verificada: Morosos por cliente

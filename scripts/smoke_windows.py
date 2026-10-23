@@ -76,7 +76,10 @@ def main():
             # Exclusivo de esta carpeta temporal de test; nunca se incorpora al programa o la vista del usuario.
             sample_time=time.time()
             previous_sample=normalize(raw(),sample_time-120)
-            sample=normalize(raw('200000000/400000000','1h2m'),sample_time)
+            synthetic_raw=raw('200000000/400000000','1h2m')
+            synthetic_raw['queues'].append(dict(synthetic_raw['queues'][0], **{
+                '.id':'*EXCLUDED', 'name':'Cola filtrada exclusiva de test', 'target':'198.51.100.50/32'}))
+            sample=normalize(synthetic_raw,sample_time)
             profile={'id':'smoke','name':'Localidad exclusiva de test','host':'127.0.0.1','ssh_user':'test',
                 'connected':True,'last_read':sample['timestamp'],'last_error':'','history':[previous_sample,sample],
                 'metadata':{'*1|198.51.100.20':{'alias':'Persistencia compilada verificada'}}}
@@ -118,6 +121,22 @@ def main():
             assert '/clientes/smoke/*1/morosidad/' in clients
             assert '198.51.100.20' in clients
             assert 'class="connection-status online"' in clients
+            assert 'Revisar colas excluidas' in clients
+            inventory=opener.open(base+'/inventario/smoke/',timeout=5).read().decode()
+            assert 'Cola filtrada exclusiva de test' in inventory and 'Incluir en Clientes' in inventory
+            excluded=sample['inventory'][0]
+            def inventory_change(action):
+                page=opener.open(base+'/inventario/smoke/',timeout=5).read().decode()
+                csrf=re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"',page)[1]
+                return opener.open(Request(base+'/inventario/smoke/',data=urlencode(dict(
+                    csrfmiddlewaretoken=csrf, action=action, fingerprint=excluded['fingerprint'],
+                    reading=str(sample['timestamp']))).encode()),timeout=5).read().decode()
+            assert 'Revertir inclusión' in inventory_change('include')
+            included=opener.open(base+'/clientes/?site=smoke',timeout=5).read().decode()
+            assert 'Cola filtrada exclusiva de test' in included
+            assert 'Incluir en Clientes' in inventory_change('revert')
+            with override_settings(STATE_DIR=state,SECRET_KEY=secret):
+                assert Store().read()['profiles']['smoke']['inclusions']==[]
             connections = opener.open(base+'/conexiones/',timeout=5).read().decode()
             for status in ('online', 'error', 'offline'):
                 assert f'class="connection-status {status}"' in connections

@@ -2,6 +2,8 @@
 
 Programa para conectar varias localidades por **SSH a Raspberry Pi**, leer su MikroTik y generar automáticamente **Analytics** y **Clientes**. El usuario rechazó el MVP anterior de captura manual y simulación; este es el alcance vigente.
 
+La entrega de auditoría del **22 de octubre de 2026** está en `dist/auditoria-20261022/SpicyOps/SpicyOps.exe` y `dist/auditoria-20261022/SpicyOps-Windows.zip`. Corrige Morosos con rangos, conserva resets conocidos, permite revisar excepciones de inventario, acota toda comunicación y evita descifrar el estado en cada ciclo inactivo. **98 pruebas correctas**, ejecutable y SSH loopback verificados; sin sustituir distribuciones anteriores. [Resultados, mediciones y límites](docs/auditoria-20261022.md).
+
 La revisión de lecturas del 22 de octubre de 2026 optimiza únicamente el recorrido del historial en Analytics, conservando cálculos y avisos. Ejecutable verificado en `dist/lecturas-optimizadas/SpicyOps/SpicyOps.exe` y ZIP en `dist/lecturas-optimizadas/SpicyOps-Windows.zip`, sin sustituir las entregas anteriores. [Evidencia y reproducción](docs/optimizacion-lecturas.md).
 
 ## Usar el programa
@@ -16,11 +18,14 @@ Abrir `dist/SpicyOps/SpicyOps.exe`. Es una distribución portable: conservar la 
 2. Al conectar, comprobar Raspberry y MikroTik e importar automáticamente las colas individuales. Conectar y sincronizar solo leen; no se instalan servicios en Raspberry.
 3. El selector superior incluye **Todos**: abre Clientes con los servicios de todas las localidades activas (conectadas), usando su última lectura guardada e indicando localidad y fecha por fila. Las desconectadas siguen disponibles al seleccionarlas individualmente. La búsqueda también acepta localidad; Ver datos y Suspender conservan el destino individual.
 4. **Clientes**: consultar IP, plan en Mbps (o MB/s), contadores en GB y estado de configuración. La flecha diagonal **↗ (Ver datos)** permite guardar nombre visible, contacto, ubicación y notas, independientes de lo leído en MikroTik.
+   **Revisar colas excluidas** muestra identificación, IP y motivo. **Incluir en Clientes** permite una excepción local para una cola IPv4 individual válida filtrada como infraestructura; **Revertir inclusión** restaura el filtro. Se conserva por localidad, ID, nombre de cola e IP. Un cambio de identidad/IP no hereda la excepción. No crea clientes manuales ni escribe en MikroTik; Morosos conserva su validación fresca y confirmación individual. Las lecturas antiguas sin detalle requieren sincronizar primero.
 5. **Analytics → Actualizar lectura**: consultar los contadores actuales y la gráfica de consumo observado, y la lista por cliente con estimados de 24 horas y 30 días, calculados únicamente como aproximación desde encendido. No hay selector ni proyecciones entre lecturas. Cada barra conserva fecha y hora, colores por día y el detalle de inicio y fin al pasar el cursor. En pantallas estrechas se desplaza horizontalmente.
 
 En **Clientes → Suspender**, un interruptor compacto muestra **Sí** cuando la restricción está activa y **No** cuando está desactivada. Pulsarlo abre la confirmación para suspender o reactivar; no cambia el estado hasta confirmar y leer el resultado. La tabla adapta las filas a tarjetas en pantallas estrechas. La confirmación muestra localidad, cliente e IP. Suspender agrega la IPv4 a la lista exacta `Morosos` o habilita su entrada existente; quitar deshabilita su entrada individual, sin borrarla. El programa vuelve a leer la lista para confirmar el estado y no cambia planes, contadores, reglas ni permisos.
 
 Este control requiere una cuenta API con escritura y reglas de bloqueo de `Morosos` ya configuradas en MikroTik. Una cuenta de solo lectura permite consultar, pero rechazará cambios. Pertenecer a la lista no demuestra un corte físico: orden de reglas, FastTrack, sesiones abiertas e IPv6 pueden permitir tráfico. El control cubre la IPv4 de la cola simple, no dispositivos o servicios con otras direcciones. Las restricciones compartidas, dinámicas o duplicadas requieren revisión del administrador. Ante un resultado incierto hay que sincronizar antes de reintentar. No hay cortes automáticos por fecha ni registro de pagos.
+
+Se reconocen direcciones individuales, CIDR y rangos IPv4 inclusivos. Una restricción activa compartida/dinámica aplicable o una entrada activa de Morosos que no pueda interpretarse bloquea el cambio individual. Nunca se modifican rangos, subredes ni entradas dinámicas. La misma interpretación se comprueba antes y después de escribir; una respuesta ambigua no confirma éxito.
 
 Cada instalación guarda automáticamente sus localidades y datos en `%LOCALAPPDATA%/SpicyOps`. Las credenciales se cifran y la clave del programa empaquetado se protege con DPAPI de la cuenta Windows. No hay clientes ni conexiones precargados. No se deben compartir esos archivos privados para distribuir el programa.
 
@@ -39,6 +44,8 @@ Analytics, Clientes y Conexiones incorporan los cambios sin recargar la página 
 ## Desarrollo
 
 ### Diagnóstico de conexión
+
+Conectar, sincronizar y Morosos comparten un presupuesto de **60 segundos** para DNS, conexión, autenticación, envío/ejecución, recepción y cierre SSH; también se comprueba el plazo al validar el inventario. El lector remoto recibe un presupuesto limitado al tiempo restante. Hay como máximo dos resoluciones DNS y cuatro trabajadores SSH pendientes en el proceso, todos daemon: un bloqueo no impide salir ni genera hilos sin límite. Nunca se reintenta una escritura automáticamente; un resultado no confirmado exige sincronizar.
 
 En **Conexiones → Diagnosticar**, cada localidad comprueba acceso al puerto SSH, identidad del equipo, autenticación SSH, Python/librouteros, certificado TLS, lecturas API-SSL e inventario. El progreso aparece por etapa y termina con una orientación concreta. Si una etapa falla, las dependientes quedan como **No comprobada**. Una huella nueva se confirma en **Configurar**; una huella cambiada detiene el acceso y nunca se sustituye automáticamente.
 
@@ -76,6 +83,8 @@ Guía visual de localidades, Tailscale, SSH y API-SSL: [documento editable](docs
 No se ha publicado un sitio web ni se ha instalado el programa en Raspberry. El ejecutable incluye el cliente SSH; requiere acceso de red existente y la configuración de lectura de cada Raspberry/MikroTik. La importación viene de **colas simples RouterOS 6/7**; PPPoE, RADIUS y otros modelos requieren un adaptador distinto. No se acredita compatibilidad física v7 sin probarla.
 
 La edad de una cola/contador no se deduce del uptime. La gráfica descarta comparaciones afectadas por reinicios o resets de contador; sus barras muestran diferencias observadas, no proyecciones ni facturación. No se inventan datos para llenar la interfaz.
+
+Analytics compara subida y bajada entre lecturas consecutivas de la misma época de arranque. Un reset conocido sigue invalidando la aproximación aunque el contador recupere el valor anterior y aunque rote el historial retenido. Al cambiar de router/arranque se inicia otra época; esto no demuestra la edad real de los contadores.
 
 La cuenta de Lulu y su ensayo siguen cerrados según la documentación previa. No se han elevado permisos ni reabierto escrituras. `config-mikro/` y `config-antenasyclientes/` se conservan intactas e ignoradas. El portal cautivo continúa fuera de alcance.
 

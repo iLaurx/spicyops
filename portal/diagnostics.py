@@ -83,7 +83,7 @@ def run(profile, result, publish):
         if isinstance(raw, dict) and isinstance(raw.get('router'), dict) and 'version' in raw['router']:
             if not str(raw['router']['version']).startswith(('6.', '7.')):
                 raise ConnectionFailure('', stage='inventory', code='inventory_version')
-        sample = normalize(raw, time.time(), deadline=min(deadline, time.monotonic()+8))
+        sample = normalize(raw, time.time(), deadline=min(deadline, time.monotonic()+8), inclusions=profile.get('inclusions', ()))
         # Exigir estructura de las listas, incluso cuando están vacías.
         if not isinstance(raw.get('restrictions'), list): raise ValueError()
         warning = sample['excluded'] or sample['unknown_counters'] or any(c['ambiguous'] for c in sample['clients'])

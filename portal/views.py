@@ -13,22 +13,22 @@ from .auth import protected
 from .connector import collect, ConnectionFailure
 from .forms import ConnectionForm
 from .store import Store
-from .telemetry import normalize, same_boot, estimate_uptime
+from .telemetry import normalize, same_boot, estimate_uptime, apply_inclusions, carry_counter_validity
 from . import diagnostics
 from .scheduling import auto_context, exclusive_view, locality_lock, finish_schedule, INTERVALS
 
-def profiles_context(request):
+def profiles_context(request, profile_id=None):
     data = Store().read()
     profiles = list(data['profiles'].values())
     profiles.sort(key=lambda p: p['name'].lower())
-    selected = request.GET.get('site') or request.session.get('site')
+    selected = profile_id or request.GET.get('site') or request.session.get('site')
     all_sites = selected == 'all' and request.resolver_match.url_name == 'clients'
     active = None if all_sites else next((p for p in profiles if p['id'] == selected), profiles[0] if profiles else None)
     if not request.headers.get('X-SpicyOps-Live'):
         if active and selected != 'all': request.session['site'] = active['id']
         elif all_sites: request.session['site'] = 'all'
     # Nunca pasar credenciales, pin ni rutas de acceso a las plantillas generales.
-    safe = [{k: p.get(k) for k in ('id','name','host','ssh_user','connected','last_error','last_read','last_error_at','last_attempt')} for p in profiles]
+    safe = [{k: p.get(k) for k in ('id','name','host','ssh_user','connected','last_error','last_read','last_error_at','last_attempt','inventory_revision')} for p in profiles]
     for locality, profile in zip(safe, profiles):
         locality['automatic'] = auto_context(profile)
         locality['connection_state'] = ('offline' if not locality['connected'] else
@@ -180,7 +180,10 @@ def connect(request, profile_id=None):
                     current.update(generation=configuration_id, busy_until=time.time()+75)
                 store.update(claim_configuration)
                 existing['generation'] = configuration_id
-            sample = normalize(collect(profile), time.time())
+            profile['inclusions'] = list((existing or {}).get('inclusions', ()))
+            deadline = time.monotonic()+60
+            sample = normalize(collect(profile), time.time(), deadline=deadline, inclusions=profile['inclusions'])
+            carry_counter_validity((existing or {}).get('history', []), sample)
             profile.update(connected=True, last_read=sample['timestamp'], last_error='',
                 history=((existing or {}).get('history',[]) + [sample])[-1440:], metadata=(existing or {}).get('metadata',{}))
             profile['automatic'] = dict((existing or {}).get('automatic', {'enabled': False, 'interval': 5}))
@@ -220,7 +223,7 @@ def connect(request, profile_id=None):
                 form.fields['router_password'].required = False
                 form.data = form.data.copy()
                 form.data['fingerprint'] = fingerprint
-        except (ValueError, KeyError):
+        except (ValueError, KeyError, TimeoutError):
             form.add_error(None, 'La lectura del MikroTik está incompleta o tiene un formato no compatible; no se importaron datos parciales.')
         finally:
             if existing:
@@ -257,7 +260,8 @@ def _refresh_profile(profile_id):
     profile = store.update(start)
     error = ''
     sample = None
-    try: sample = normalize(collect(profile), time.time())
+    deadline = time.monotonic()+60
+    try: sample = normalize(collect(profile), time.time(), deadline=deadline, inclusions=profile.get('inclusions', ()))
     except ConnectionFailure as exc: error = str(exc)
     except (ValueError, KeyError, TypeError): error = 'La lectura está incompleta; se conserva la última lectura válida.'
     except Exception: error = 'No se pudo completar la lectura; se conserva la última lectura válida.'
@@ -271,6 +275,7 @@ def _refresh_profile(profile_id):
         if error: current['last_error_at'] = current['last_attempt']
         finish_schedule(current, time.time(), error)
         if sample:
+            carry_counter_validity(current.get('history', []), sample)
             current['history'] = (current.get('history',[]) + [sample])[-1440:]
             current['last_read'] = sample['timestamp']
     store.update(finish)
@@ -349,7 +354,7 @@ def morosity(request, profile_id, client_id):
             raise ValueError('Sincroniza la localidad para confirmar su estado antes de cambiar Morosos.')
         sample = profile['history'][-1]
         client = next((c for c in sample['clients'] if c['id'] == client_id), None)
-        if (not client or client['ambiguous'] or client['disabled'] or
+        if (not client or client['ambiguous'] or client['disabled'] or client.get('restriction_unsafe') or
                 client['fingerprint'] != request.POST.get('fingerprint') or
                 client['restricted'] == (action == 'suspend')):
             raise ValueError('El cliente o su estado cambió. Sincroniza y vuelve a seleccionarlo.')
@@ -367,9 +372,10 @@ def morosity(request, profile_id, client_id):
         return redirect('clients')
     sample, error = None, ''
     try:
-        sample = normalize(collect(profile, morosity=operation), time.time())
+        deadline = time.monotonic()+60
+        sample = normalize(collect(profile, morosity=operation), time.time(), deadline=deadline, inclusions=profile.get('inclusions', ()))
         observed = next((c for c in sample['clients'] if c['fingerprint'] == request.POST['fingerprint']), None)
-        if not observed or observed['restricted'] != (action == 'suspend'):
+        if not observed or observed.get('restriction_unsafe') or observed['restricted'] != (action == 'suspend'):
             error = 'No se pudo confirmar el estado del cliente. Sincroniza antes de reintentar.'
     except ConnectionFailure as exc:
         error = str(exc) + ' El resultado puede ser incierto; sincroniza antes de reintentar.'
@@ -388,6 +394,7 @@ def morosity(request, profile_id, client_id):
         current['last_attempt'] = time.time()
         if error: current['last_error_at'] = current['last_attempt']
         if sample:
+            carry_counter_validity(current.get('history', []), sample)
             current['history'] = (current.get('history', []) + [sample])[-1440:]
             current['last_read'] = sample['timestamp']
     store.update(finish)
@@ -397,6 +404,49 @@ def morosity(request, profile_id, client_id):
         if action == 'suspend' else
         'IP retirada de Morosos; estado confirmado en MikroTik. Comprueba el acceso del cliente.')
     return redirect('clients')
+
+
+@protected
+@exclusive_view
+def inventory(request, profile_id):
+    store = Store()
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action not in ('include', 'revert'):
+            return HttpResponseBadRequest('Selecciona una acción disponible.')
+        def save(data):
+            profile = data['profiles'].get(profile_id)
+            if not profile or not profile.get('history'):
+                raise ValueError('Sincroniza la localidad para revisar su inventario.')
+            if profile.get('busy_until', 0) > time.time():
+                raise ValueError('Espera a que termine la operación y sincroniza.')
+            sample = profile['history'][-1]
+            candidate = next((c for c in sample.get('inventory', [])
+                              if c['fingerprint'] == request.POST.get('fingerprint')), None)
+            if (not candidate or not candidate.get('inclusion_eligible') or
+                    str(sample['timestamp']) != request.POST.get('reading')):
+                raise ValueError('La cola cambió o no es individual válida. Sincroniza y vuelve a revisarla.')
+            inclusions = set(profile.get('inclusions', ()))
+            if action == 'include': inclusions.add(candidate['fingerprint'])
+            else: inclusions.discard(candidate['fingerprint'])
+            profile['inclusions'] = sorted(inclusions)
+            apply_inclusions(sample, inclusions)
+            profile['inventory_revision'] = uuid.uuid4().hex
+        try:
+            store.update(save)
+            request.session['notice'] = 'Excepción de inventario guardada. No se envió ningún cambio al router.'
+        except ValueError as exc:
+            request.session['notice'] = str(exc)
+        return redirect('inventory', profile_id=profile_id)
+    data, _, context = profiles_context(request, profile_id=profile_id)
+    profile = data['profiles'].get(profile_id)
+    if not profile: raise Http404()
+    sample = profile['history'][-1] if profile.get('history') else {}
+    context.update(page='clients', inventory_profile={'id': profile_id, 'name': profile['name']},
+        excluded_queues=sample.get('excluded_queues', []), reading=str(sample.get('timestamp', '')),
+        included_queues=[c for c in sample.get('clients', []) if c.get('infrastructure')],
+        inventory_available='inventory' in sample, message=notice(request))
+    return render(request, 'portal/inventory.html', context)
 
 
 @require_POST

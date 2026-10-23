@@ -4,7 +4,7 @@ import os
 os.environ['DJANGO_SETTINGS_MODULE']='spicyops.portal_settings'
 
 data = [('portal/templates', 'portal/templates'), ('portal/static', 'portal/static'),
-        ('portal/remote_reader.py','portal')]
+        ('portal/remote_reader.py','portal'), ('portal/router_contract.py','portal')]
 data += collect_data_files('django', includes=['conf/locale/es/**', 'conf/locale/es_MX/**'])
 a = Analysis(['run_panel.py'], pathex=[], binaries=[], datas=data,
     hiddenimports=collect_submodules('django',filter=lambda name:not name.startswith(('django.contrib.gis','django.db.backends.postgresql')))+collect_submodules('portal',filter=lambda name:not name.startswith('portal.tests'))+['spicyops.portal_settings','spicyops.wsgi',

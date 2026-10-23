@@ -21,11 +21,19 @@ El conector mantiene las cuatro rutas de lectura y añade únicamente `/ip/firew
 
 ## Cálculo
 
+La auditoría del 22/10/2026 añade revisión local de colas excluidas: conserva el filtro predeterminado y permite incluir/revertir únicamente una cola IPv4 individual válida de la última lectura. La excepción se vincula a localidad, ID, nombre e IP, y se revalida contra el inventario fresco para Morosos. No admite destinos compartidos/múltiples, IPv6, ambigüedad ni valores inválidos. El navegador solicita una identidad observada; no puede desactivar protecciones mediante una bandera.
+
+Morosos interpreta IPv4, CIDR y rangos inclusivos con el mismo contrato en normalización, validación previa y confirmación posterior. Una restricción activa compartida/dinámica aplicable o activa no interpretable impide un cambio individual seguro. Los fallos de escritura/confirmación exigen sincronizar antes de reintentar.
+
 En la gráfica: `bytes del intervalo = contador final − contador inicial`. Se incluyen subida y bajada. Las estimaciones usan contador acumulado / uptime × horizonte (86400 segundos o 30 veces ese valor); la edad real del contador no está confirmada. Se excluyen resets/cambios conocidos y colas ambiguas. GB y Mbps son unidades decimales. `MB/s = Mbps / 8`.
 
 No mezclar épocas de arranque, descensos de contadores individuales o cambios de identidad de cola. Uptime del router no prueba cuándo se creó o reseteó una cola. No ofrecer las proyecciones como facturación ni medición histórica mensual. No fabricar gráficos o cifras cuando falta conexión/intervalo.
 
+Los descensos se detectan entre lecturas consecutivas, por cada dirección. Se conserva su invalidación durante esa época incluso si el contador recupera el valor anterior o se elimina la lectura antigua por el límite de 1440 muestras. La migración inicial consulta el historial retenido; no reconstruye resets anteriores a ese historial ni no observados.
+
 ## Implementación y límites
+
+Las operaciones tienen presupuesto global de 60 segundos, incluidos DNS y cierre. DNS usa como máximo dos hilos daemon sin credenciales; las comunicaciones tienen cuatro cupos fijos para contener bloqueos de biblioteca/sistema sin impedir salir. El coordinador conserva dos lecturas automáticas concurrentes y una operación por localidad. Su instantánea de programación no contiene credenciales/historial: se invalida con la firma del archivo bajo el bloqueo y el trabajo vuelve a leer el perfil vigente. Se conserva el archivo cifrado único y su coste en lecturas completas/escrituras necesarias. No se añaden respaldos, recuperación de archivos corruptos ni cambios del punto 6 de la auditoría.
 
 Interfaz Django con servidor embebido y ventana de aplicación de Edge; empaquetado Windows con Python y dependencias incluidos. La configuración actual no usa ORM, PostgreSQL ni migraciones. Un archivo de estado cifrado por instalación conserva perfiles, metadatos y hasta 1440 lecturas por localidad; la clave de la versión empaquetada se protege con DPAPI del usuario Windows. La distribución no contiene ese estado.
 

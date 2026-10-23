@@ -67,6 +67,7 @@ class Coordinator:
         self.pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix='spicyops-read')
         self.pending = {}
         self.thread = None
+        self.schedule_snapshot = None
 
     def prepare(self):
         now = self.clock()
@@ -100,14 +101,15 @@ class Coordinator:
         if self.stop_event.is_set():
             return
         self.pending = {key: future for key, future in self.pending.items() if not future.done()}
-        profiles = self.store.read()['profiles'].values()
+        self.schedule_snapshot = self.store.schedule(self.schedule_snapshot)
+        profiles = self.schedule_snapshot[1]
         due = sorted(profiles, key=lambda p: p.get('automatic', {}).get('next_at') or float('inf'))
         for profile in due:
             if len(self.pending) >= self.workers:
                 break
             config = profile.get('automatic', {})
             if (profile['id'] not in self.pending and profile.get('connected') and config.get('enabled')
-                    and not profile.get('operation_active') and profile.get('busy_until', 0) <= self.clock()
+                    and not profile.get('operation_active') and (profile.get('busy_until') or 0) <= self.clock()
                     and config.get('next_at') is not None and config['next_at'] <= self.clock()
                     and locality_available(profile['id'])):
                 self.pending[profile['id']] = self.pool.submit(self.execute, profile['id'])

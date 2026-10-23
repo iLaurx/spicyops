@@ -11,5 +11,6 @@ urlpatterns = [path('',views.analytics,name='analytics'), path('clientes/',views
     path('conexiones/<str:profile_id>/automatica/',views.automatic,name='automatic'),
     path('conexiones/<str:profile_id>/desconectar/',views.disconnect,name='disconnect'),
     path('clientes/<str:profile_id>/<str:client_id>/datos/',views.edit_client,name='edit_client'),
+    path('inventario/<str:profile_id>/',views.inventory,name='inventory'),
     path('clientes/<str:profile_id>/<str:client_id>/morosidad/',views.morosity,name='morosity'),
     path('open/<str:token>/',open_panel)]

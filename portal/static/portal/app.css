@@ -109,3 +109,16 @@ dialog::backdrop{background:#050a16b3}
 .diagnostic-date{font-size:.75rem;overflow-wrap:anywhere}.diagnostic-result[hidden],.diagnostic-stale[hidden],.diagnostic-error[hidden]{display:none}
 
 @media(max-width:360px){.sidebar .nav-link{padding-left:8px;padding-right:8px;gap:7px}}
+
+.inventory-table{table-layout:fixed;white-space:normal;min-width:0}
+.inventory-table th,.inventory-table td{overflow-wrap:anywhere;white-space:normal}
+.inventory-table th:nth-child(1){width:25%}.inventory-table th:nth-child(2){width:19%}
+.inventory-table th:nth-child(3){width:34%}.inventory-table th:nth-child(4){width:22%}
+.inventory-table small{display:block;color:var(--muted,#b8bfd1);margin-top:4px}
+@media(max-width:660px){
+ .inventory-table,.inventory-table tbody{display:block}.inventory-table thead{display:none}
+ .inventory-table tr{display:block;padding:14px 18px;border-top:1px solid var(--border)}
+ .inventory-table td{display:block;padding:8px 0;border:0}
+ .inventory-table td[data-label]::before{content:attr(data-label);display:block;font-size:10px;color:#b8bfd1;margin-bottom:5px}
+ .inventory-table button{min-height:44px}.inventory-table form,.inventory-table form .button{width:100%}
+}
