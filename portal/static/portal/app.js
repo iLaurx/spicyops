@@ -1,4 +1,40 @@
+// Conservar el vencimiento al incorporar lecturas nuevas a la misma vista.
+const panelNotices=new Map();
+function bindNotices(){
+document.querySelectorAll('[data-notice]:not([data-notice-bound])').forEach(notice=>{
+  const key=notice.textContent.trim();
+  const state=panelNotices.get(key)||{expires:Date.now()+6000,dismissed:false};
+  panelNotices.set(key,state);
+  if(state.dismissed || state.expires<=Date.now()){notice.remove();return;}
+  notice.dataset.noticeBound='true';
+  const content=document.createElement('span');
+  content.append(...notice.childNodes);
+  const close=document.createElement('button');
+  close.type='button';close.className='notice-close';
+  close.setAttribute('aria-label','Cerrar aviso');close.textContent='×';
+  notice.append(content,close);
+  let timer,remaining=state.expires-Date.now();
+  function dismiss(){
+    clearTimeout(timer);state.dismissed=true;
+    document.querySelectorAll('[data-notice-bound]').forEach(item=>{
+      if(item.firstElementChild?.textContent.trim()===key)item.remove();
+    });
+  }
+  function pause(){clearTimeout(timer);remaining=Math.max(0,state.expires-Date.now());}
+  function resume(){
+    if(notice.matches(':hover') || notice.contains(document.activeElement))return;
+    state.expires=Date.now()+remaining;timer=setTimeout(dismiss,remaining);
+  }
+  close.addEventListener('click',dismiss);
+  notice.addEventListener('pointerenter',pause);
+  notice.addEventListener('pointerleave',resume);
+  notice.addEventListener('focusin',pause);
+  notice.addEventListener('focusout',resume);
+  timer=setTimeout(dismiss,remaining);
+});
+}
 function bindPanel(){
+bindNotices();
 document.querySelectorAll('[data-autosubmit]:not([data-bound])').forEach(select=>{select.dataset.bound='true';select.addEventListener('change',()=>{if(select.value==='all' && select.dataset.allUrl)select.form.action=select.dataset.allUrl;select.form.submit();});});
 document.querySelectorAll('form:not([data-bound])').forEach(form=>{form.dataset.bound='true';form.addEventListener('submit',()=>{
   const button=form.querySelector('[data-busy]');

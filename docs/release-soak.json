@@ -1,0 +1,12 @@
+{
+  "duration_seconds": 300.72,
+  "localities": 3,
+  "clients_each": 10,
+  "samples_each": 1440,
+  "rounds": 57,
+  "idle_ticks": 5700,
+  "state_bytes": 20170276,
+  "median_three_writes_and_read_seconds": 4.485,
+  "result": "OK",
+  "network": "none"
+}

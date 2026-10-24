@@ -1,15 +1,25 @@
 from pathlib import Path
 import argparse
 import zipfile
+import sys
+import hashlib
+import json
+import shutil
 
 root=Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(root))
+from portal.version import VERSION
+release=root/'dist'/f'SpicyOps-{VERSION}-Windows'
 parser=argparse.ArgumentParser()
-parser.add_argument('--folder',type=Path,default=root/'dist'/'SpicyOps')
-parser.add_argument('--archive',type=Path,default=root/'dist'/'SpicyOps-Windows.zip')
+parser.add_argument('--folder',type=Path,default=release/'SpicyOps')
+parser.add_argument('--archive',type=Path,default=release/f'SpicyOps-{VERSION}-Windows.zip')
 args=parser.parse_args()
 folder=args.folder.resolve()
 assert (folder/'SpicyOps.exe').is_file(),'Construir primero el programa.'
-(folder/'LEEME.txt').write_text('''SpicyOps para Windows
+(folder/'LEEME.txt').write_text(f'''SpicyOps {VERSION} para Windows
+
+Respaldos y traslado: abre Respaldos al pie de la aplicación.
+Consulta GUIA.md y NOTAS-DE-VERSION.md. Paquete sin firma digital.
 
 Abre SpicyOps.exe. Conserva la carpeta _internal junto al programa.
 No necesitas instalar Python ni PostgreSQL.
@@ -45,10 +55,27 @@ Las comunicaciones tienen un presupuesto total de 60 segundos, incluido DNS.
 ''',encoding='utf-8')
 for file in folder.rglob('*'):
     if file.is_file():
-        assert not any(part in ('.local','config-mikro','config-antenasyclientes') for part in file.parts)
+        assert not any(part in ('.local','config-mikro','config-antenasyclientes','fixtures','tests','backups') or part.startswith('original-') for part in file.parts)
         assert file.name not in ('secret.key','secret.dpapi','connections.enc','runtime.json')
 archive=args.archive.resolve()
+for source, target in [('docs/guia-publica.md', 'GUIA.md'), ('docs/release-1.0.0.md', 'NOTAS-DE-VERSION.md'), ('docs/THIRD-PARTY-NOTICES.txt', 'THIRD-PARTY-NOTICES.txt'), ('docs/checklist-release.md', 'CHECKLIST.md'), ('docs/aceptacion-piloto.md', 'aceptacion-piloto.md'), ('docs/verificacion-release-1.0.0.md', 'verificacion-release-1.0.0.md'), ('docs/release-sources.json', 'release-sources.json'), ('docs/release-exe.json', 'release-exe.json'), ('docs/release-soak.json', 'release-soak.json')]:
+    shutil.copyfile(root/source, folder/target)
+shutil.copytree(root/'build'/'release-notices'/'licenses', folder/'licenses', dirs_exist_ok=True)
+shutil.copyfile(root/'build'/'release-notices'/'LGPL-sources.zip', folder/'LGPL-sources.zip')
+# Comprimir después de incorporar las guías y avisos.
 with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as output:
+    for file in sorted(folder.rglob('*')):
+        if file.is_file(): output.write(file, Path('SpicyOps')/file.relative_to(folder))
+entries = {}
+with zipfile.ZipFile(archive) as zipped:
+    assert zipped.testzip() is None
     for file in folder.rglob('*'):
-        if file.is_file():output.write(file,Path('SpicyOps')/file.relative_to(folder))
-print(f'Distribución Windows creada: {archive.stat().st_size/1024/1024:.1f} MB. Sin perfiles ni estado privado.')
+        if file.is_file():
+            name = (Path('SpicyOps')/file.relative_to(folder)).as_posix()
+            digest = hashlib.sha256(file.read_bytes()).hexdigest()
+            assert hashlib.sha256(zipped.read(name)).hexdigest() == digest
+            entries[name] = digest
+    assert set(zipped.namelist()) == set(entries)
+report = {'version': VERSION, 'files': len(entries), 'sha256': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in (folder/'SpicyOps.exe', archive)}, 'contents': entries}
+(archive.parent/'integridad.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+print(json.dumps({k: v for k,v in report.items() if k != 'contents'}, indent=2))

@@ -1,18 +1,14 @@
-# SpicyOps para Windows
+# SpicyOps 1.0.0 para Windows
 
-Programa para conectar varias localidades por **SSH a Raspberry Pi**, leer su MikroTik y generar automáticamente **Analytics** y **Clientes**. El usuario rechazó el MVP anterior de captura manual y simulación; este es el alcance vigente.
+Distribución oficial local: **`dist/SpicyOps-1.0.0-Windows/SpicyOps/SpicyOps.exe`**. ZIP: **`dist/SpicyOps-1.0.0-Windows/SpicyOps-1.0.0-Windows.zip`**. Extrae todo y conserva `_internal`. Paquete sin firma digital, preparado localmente; sin publicación remota. Las distribuciones anteriores se conservan como históricas.
 
-La entrega de auditoría del **22 de octubre de 2026** está en `dist/auditoria-20261022/SpicyOps/SpicyOps.exe` y `dist/auditoria-20261022/SpicyOps-Windows.zip`. Corrige Morosos con rangos, conserva resets conocidos, permite revisar excepciones de inventario, acota toda comunicación y evita descifrar el estado en cada ciclo inactivo. **98 pruebas correctas**, ejecutable y SSH loopback verificados; sin sustituir distribuciones anteriores. [Resultados, mediciones y límites](docs/auditoria-20261022.md).
+[Guía pública](docs/guia-publica.md) · [Notas de versión](docs/release-1.0.0.md) · [Checklist](docs/checklist-release.md) · [Verificación final](docs/verificacion-release-1.0.0.md) · [Piloto pendiente](docs/aceptacion-piloto.md).
 
-La revisión de lecturas del 22 de octubre de 2026 optimiza únicamente el recorrido del historial en Analytics, conservando cálculos y avisos. Ejecutable verificado en `dist/lecturas-optimizadas/SpicyOps/SpicyOps.exe` y ZIP en `dist/lecturas-optimizadas/SpicyOps-Windows.zip`, sin sustituir las entregas anteriores. [Evidencia y reproducción](docs/optimizacion-lecturas.md).
+Recuperación y respaldo portable cifrado con contraseña desde **Respaldos** en el pie. El estado dañado o una clave no accesible abren recuperación; no se borran originales.
 
 ## Usar el programa
 
-La versión verificada con diagnóstico por etapas y sincronización automática se entrega en `dist/diagnostico/SpicyOps/SpicyOps.exe` y `dist/SpicyOps-diagnostico-Windows.zip`. Esta salida alternativa conserva las distribuciones anteriores y cualquier instancia abierta. Al extraer el ZIP, abre `SpicyOps/SpicyOps.exe` y conserva `_internal` junto a él.
-
-La entrega de sincronización automática está en `dist/auto-sync/SpicyOps/SpicyOps.exe`, con su carpeta `_internal`, y en `dist/auto-sync/SpicyOps-Windows.zip`. Esta salida aislada permite comprobar la nueva versión sin sustituir una distribución que pueda estar en uso.
-
-Abrir `dist/SpicyOps/SpicyOps.exe`. Es una distribución portable: conservar la carpeta `_internal` junto al ejecutable. No necesita instalar Python, PostgreSQL, Docker ni crear una base de datos. La interfaz utiliza un tema oscuro en Analytics, Clientes y Conexiones, incluidos formularios y ventanas de datos. En Clientes, cada cliente se identifica visualmente con un icono vectorial de usuario. Las localidades y Conexiones muestran un punto verde con **Activa**, ámbar con **Error de conexión** o gris con **Desconectada**. El estado refleja la última operación y no caduca por la antigüedad de la lectura; su fecha se muestra por separado. La ventana usa Microsoft Edge; si no está disponible, se abre el navegador predeterminado. El icono de SpicyOps en la bandeja permite reabrir la ventana o salir.
+Abrir `dist/SpicyOps-1.0.0-Windows/SpicyOps/SpicyOps.exe`. Es una distribución portable: conservar la carpeta `_internal` junto al ejecutable. No necesita instalar Python, PostgreSQL, Docker ni crear una base de datos. La interfaz utiliza un tema oscuro en Analytics, Clientes y Conexiones, incluidos formularios y ventanas de datos. En Clientes, cada cliente se identifica visualmente con un icono vectorial de usuario. Las localidades y Conexiones muestran un punto verde con **Activa**, ámbar con **Error de conexión** o gris con **Desconectada**. El estado refleja la última operación y no caduca por la antigüedad de la lectura; su fecha se muestra por separado. La ventana usa Microsoft Edge; si no está disponible, se abre el navegador predeterminado. El icono de SpicyOps en la bandeja permite reabrir la ventana o salir.
 
 1. **Conexiones → Nueva localidad**: dirección de Raspberry por red local/Tailscale, puerto y usuario SSH; contraseña o clave SSH de Windows. Completar acceso API-SSL de lectura y certificado CA del MikroTik. Confirmar la huella SSH del equipo.
 2. Al conectar, comprobar Raspberry y MikroTik e importar automáticamente las colas individuales. Conectar y sincronizar solo leen; no se instalan servicios en Raspberry.
@@ -62,21 +58,23 @@ Dependencias de aplicación en `requirements.txt`; construcción en `requirement
 .\.venv\Scripts\python.exe run_panel.py
 # Tests vigentes; no crean ni usan PostgreSQL:
 .\.venv\Scripts\python.exe manage.py test portal.tests --noinput
+# Recopilar avisos de terceros antes de empaquetar:
+.\.venv\Scripts\python.exe scripts/collect_notices.py
 # Reconstruir Windows:
 .\.venv\Scripts\python.exe scripts/build_windows.py
-# Comprobar correspondencia entre fuentes y paquete habitual:
+# Comprobar correspondencia entre fuentes y paquete oficial:
 .\.venv\Scripts\python.exe scripts/check_windows_sources.py
-# Salida aislada, útil si el ejecutable habitual está abierto:
-.\.venv\Scripts\python.exe scripts/build_windows.py --dist-dir dist/auto-sync --work-dir build/auto-sync
-.\.venv\Scripts\python.exe scripts/smoke_windows.py --exe dist/auto-sync/SpicyOps/SpicyOps.exe
-.\.venv\Scripts\python.exe scripts/package_windows.py --folder dist/auto-sync/SpicyOps --archive dist/auto-sync/SpicyOps-Windows.zip
+# Distribución oficial aislada (salir de ella antes de reconstruir):
+.\.venv\Scripts\python.exe scripts/build_windows.py --dist-dir dist/SpicyOps-1.0.0-Windows --work-dir build/release-1.0.0
+.\.venv\Scripts\python.exe scripts/smoke_windows.py --exe dist/SpicyOps-1.0.0-Windows/SpicyOps/SpicyOps.exe
+.\.venv\Scripts\python.exe scripts/package_windows.py --folder dist/SpicyOps-1.0.0-Windows/SpicyOps --archive dist/SpicyOps-1.0.0-Windows/SpicyOps-1.0.0-Windows.zip
 ```
 
 `portal/` contiene interfaz, conector, cálculos y estado privado. `spicyops/portal_settings.py` es la configuración por defecto. Para pruebas de desarrollo se puede elegir otra carpeta privada con `run_panel.py --state-dir RUTA`; nunca usar una carpeta pública.
 
 [Encargo vigente](docs/encargo-panel-conectado.md) · [Verificación del rework](docs/verificacion-panel-conectado.md) · [Guía de agentes](AGENTS.md).
 
-Guía visual de localidades, Tailscale, SSH y API-SSL: [documento editable](docs/guia-visual-conexiones.md) · [PDF con diagramas](output/pdf/SpicyOps-guia-visual.pdf).
+Guía visual de localidades, Tailscale, SSH y API-SSL: [documento editable](docs/guia-visual-conexiones.md) · [PDF histórico con diagramas](output/pdf/SpicyOps-guia-visual.pdf).
 
 ## Alcance y estado real
 
@@ -93,3 +91,5 @@ La cuenta de Lulu y su ensayo siguen cerrados según la documentación previa. N
 El primer encargo, su arquitectura de tareas y sus verificaciones permanecen en `docs/encargo-mvp-local.md`, `docs/mvp-local.md` y `docs/verificacion-mvp-local.md`. El código `ops/`, `agent/` y la suite `tests/` de esa etapa no están expuestos por el producto nuevo. La base y el simulador ficticios se retiraron; no arrancan con SpicyOps. La suite histórica solo puede ejecutarse con PostgreSQL de pruebas explícito y `--settings=spicyops.settings` más `requirements-legacy.txt`.
 
 Contexto real anterior: [arquitectura](docs/arquitectura.md), [adaptación SpicyNet](docs/adaptacion-spicynet.md), [preparación MikroTik](docs/preparacion-mikrotik.md) y [ensayo cerrado](docs/prueba-cliente-011.md). Son evidencia, no instrucciones para repetir comandos.
+
+Instalación y actualización en Windows limpio: **excluidas expresamente por el usuario**. Se comprueba actualización local con estados temporales sintéticos. Titular, licencia del proyecto y canal de soporte requieren decisión del propietario.

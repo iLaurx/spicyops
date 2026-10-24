@@ -12,7 +12,7 @@
     {% for step in locality.diagnostic.stages %}<li data-state="{{ step.state }}"><div><strong>{{ step.label }}</strong><span class="diagnostic-state">{% if step.state == 'no_comprobada' %}No comprobada{% else %}{{ step.state|capfirst }}{% endif %}</span></div><p>{{ step.message }}</p></li>{% endfor %}
     </ol>
     <p class="diagnostic-summary" role="status" aria-live="polite">{{ locality.diagnostic.summary }}</p>
-    <p class="field-help">Solo acceso de lectura. No comprueba permisos de escritura ni el acceso a internet de los clientes. No incorpora datos a Analytics o Clientes.</p>
+    <p class="field-help">Diagnóstico de lectura; no verifica internet de los clientes.</p>
     <a class="text-button" href="{% url 'configure' locality.id %}">Revisar en Configurar</a>
   </div>
 </section>

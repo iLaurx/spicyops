@@ -29,6 +29,12 @@ dialog::backdrop{background:#050a16b3}
 .status.attention,.method-note.approximate{color:#e7ca8f}
 .status.attention{background:#3b3024}
 .flash{background:#203b35;color:#b4ebcf;border-color:#386453}
+[data-notice]{display:flex;align-items:flex-start;gap:12px;justify-content:space-between}
+[data-notice]>span{min-width:0;overflow-wrap:anywhere}
+.notice-close{flex:none;display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:6px;background:transparent;color:inherit;font:24px/1 sans-serif;cursor:pointer}
+.notice-close:hover{background:#ffffff14}
+.notice-close:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.connect-layout{grid-template-columns:minmax(0,760px);justify-content:center}
 .flash.error,.errorlist{color:#ffb9bf}
 .flash.error,.errorlist.nonfield{background:#412832;color:#ffb9bf;border-color:#794451}
 .map-icon,.connection-icon,.empty-icon,.avatar{color:#b0bbff}
@@ -122,3 +128,14 @@ dialog::backdrop{background:#050a16b3}
  .inventory-table td[data-label]::before{content:attr(data-label);display:block;font-size:10px;color:#b8bfd1;margin-bottom:5px}
  .inventory-table button{min-height:44px}.inventory-table form,.inventory-table form .button{width:100%}
 }
+
+/* Respaldo y recuperación: controles coherentes con los formularios existentes. */
+.recovery-panel{padding:24px;margin:20px 0;max-width:860px}
+.recovery-panel p{color:var(--muted);margin:10px 0 18px}
+.recovery-panel form{display:grid;gap:16px;min-width:0}
+.recovery-panel label{display:grid;gap:8px;min-width:0}
+.recovery-panel input,.recovery-panel select{width:100%;max-width:100%;min-width:0}
+.recovery-panel .recovery-confirm{display:flex;align-items:flex-start;gap:12px;line-height:1.6;cursor:pointer}
+.recovery-panel .recovery-confirm input{appearance:auto;width:20px;min-width:20px;height:20px;min-height:20px;padding:0;margin:2px 0;flex:none;accent-color:var(--brand)}
+.recovery-panel .button{justify-self:start;white-space:normal;text-align:center;font-size:13px;min-height:44px}
+@media(max-width:600px){.recovery-panel{padding:18px}.recovery-panel .button{width:100%}}

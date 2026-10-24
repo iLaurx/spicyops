@@ -5,9 +5,11 @@ import sys
 from PIL import Image, ImageDraw
 
 root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(root))
+from portal.version import VERSION
 parser = argparse.ArgumentParser()
-parser.add_argument('--dist-dir', default='dist')
-parser.add_argument('--work-dir', default='build')
+parser.add_argument('--dist-dir', default=f'dist/SpicyOps-{VERSION}-Windows')
+parser.add_argument('--work-dir', default=f'build/release-{VERSION}')
 args = parser.parse_args()
 icon = Image.new('RGBA',(256,256),(0,0,0,0))
 draw = ImageDraw.Draw(icon)

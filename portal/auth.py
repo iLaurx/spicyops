@@ -16,7 +16,15 @@ def protected(view):
             return HttpResponseForbidden('SpicyOps para Windows acepta solo su interfaz local.')
         if request.session.get('desktop') != identity():
             return render(request, 'portal/locked.html', status=401)
-        response=view(request, *args, **kwargs)
+        from .store import StateError, operation
+        from contextlib import nullcontext
+        try:
+            with (nullcontext() if request.resolver_match.url_name == 'recovery' else operation()):
+                response=view(request, *args, **kwargs)
+        except (StateError, OSError):
+            from .recovery import recovery_page
+            response = recovery_page(request)
+
         response['Cache-Control']='no-store'
         response['Content-Security-Policy']="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; form-action 'self'; base-uri 'self'"
         return response

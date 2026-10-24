@@ -4,3 +4,5 @@ whitenoise==6.12.0
 waitress==3.0.2
 pystray==0.19.5
 Pillow==12.1.1
+
+cryptography==50.0.2

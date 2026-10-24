@@ -88,13 +88,17 @@ class Coordinator:
     def start(self):
         if self.thread is not None:
             return
-        self.prepare()
+        from .store import StateError
+        try: self.prepare()
+        except (StateError, OSError): pass
         self.thread = threading.Thread(target=self.run, name='spicyops-coordinator', daemon=True)
         self.thread.start()
 
     def run(self):
         while not self.stop_event.is_set():
-            self.tick()
+            from .store import StateError
+            try: self.tick()
+            except (StateError, OSError): pass
             self.stop_event.wait(1)
 
     def tick(self):
@@ -115,6 +119,11 @@ class Coordinator:
                 self.pending[profile['id']] = self.pool.submit(self.execute, profile['id'])
 
     def execute(self, profile_id):
+        from .store import operation
+        with operation():
+            return self._execute(profile_id)
+
+    def _execute(self, profile_id):
         lock = locality_lock(profile_id)
         if not lock.acquire(blocking=False):
             return

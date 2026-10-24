@@ -17,10 +17,11 @@ from urllib.error import HTTPError
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE','spicyops.portal_settings')
+from portal.version import VERSION
 
-def start(exe,state):
+def start(exe,state,extra=()):
     (state/'runtime.json').unlink(missing_ok=True)
-    process=subprocess.Popen([str(exe),'--no-open','--state-dir',str(state)],cwd=ROOT,
+    process=subprocess.Popen([str(exe),'--no-open','--state-dir',str(state),*extra],cwd=ROOT,
         stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
     for _ in range(80):
         if (state/'runtime.json').exists():break
@@ -38,7 +39,7 @@ def start(exe,state):
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('--exe',type=Path,default=ROOT/'dist'/'SpicyOps'/'SpicyOps.exe')
+    parser.add_argument('--exe',type=Path,default=ROOT/'dist'/f'SpicyOps-{VERSION}-Windows'/'SpicyOps'/'SpicyOps.exe')
     exe=parser.parse_args().exe.resolve()
     assert exe.exists(),'Construir primero SpicyOps.exe.'
     root=ROOT/'.local'/'tmp';root.mkdir(parents=True,exist_ok=True)
@@ -51,7 +52,7 @@ def main():
             assert 'Conectar mi primera localidad' in page
             assert 'Marina' not in page
             base=f'http://127.0.0.1:{runtime["port"]}'
-            for path,needle in [('/clientes/','Tus clientes vienen de tu red'),('/conexiones/','Cada red empieza'),
+            for path,needle in [('/clientes/','Sin clientes'),('/conexiones/','Sin localidades'),
                 ('/conexiones/nueva/','ACCESO A RASPBERRY'),('/static/portal/app.css','.sidebar')]:
                 assert needle in opener.open(base+path,timeout=5).read().decode(),path
             try:opener.open(base+'/open/forged/',timeout=5)
@@ -145,7 +146,10 @@ def main():
             assert 'Actualización automática' in connections
             assert 'value="5" selected' in connections
             assert 'Desactivada · Próxima: —' in connections
-            assert 'La última lectura no garantiza disponibilidad actual.' in connections
+            assert 'Última lectura:' in connections
+            assert 'data-notice' in connections
+            javascript=opener.open(base+'/static/portal/app.js',timeout=5).read().decode()
+            assert 'Cerrar aviso' in javascript and 'Date.now()+6000' in javascript
             # Persistencia de preferencias en el ejecutable, sin activar accesos.
             assert 'data-live-revision' in connections
             assert 'Diagnosticar' in connections

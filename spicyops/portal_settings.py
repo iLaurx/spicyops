@@ -8,27 +8,36 @@ STATE_DIR = Path(os.environ.get('SPICYOPS_STATE_DIR', BASE_DIR / '.local' / 'por
 STATE_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
 keyfile = STATE_DIR / 'secret.key'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
-if not SECRET_KEY:
-    if os.environ.get('SPICYOPS_PUBLIC') == '1':
-        raise RuntimeError('Configura DJANGO_SECRET_KEY antes de publicar.')
-    protected_keyfile = STATE_DIR / 'secret.dpapi'
-    if os.name == 'nt' and (getattr(sys,'frozen',False) or protected_keyfile.exists()):
-        from portal.secret import dpapi
-        import secrets
-        if not protected_keyfile.exists():
-            seed = keyfile.read_text() if keyfile.exists() else secrets.token_urlsafe(64)
-            with protected_keyfile.open('xb') as file: file.write(dpapi(seed.encode()))
-            keyfile.unlink(missing_ok=True)
-        SECRET_KEY = dpapi(protected_keyfile.read_bytes(),decrypt=True).decode()
-    elif not keyfile.exists():
-        import secrets
-        try:
-            with keyfile.open('x') as file:
-                file.write(secrets.token_urlsafe(64))
-            keyfile.chmod(0o600)
-        except FileExistsError:
-            pass
-    if not SECRET_KEY: SECRET_KEY = keyfile.read_text()
+STATE_KEY_ERROR = False
+try:
+    if not SECRET_KEY:
+        if os.environ.get('SPICYOPS_PUBLIC') == '1':
+            raise RuntimeError('Configura DJANGO_SECRET_KEY antes de publicar.')
+        protected_keyfile = STATE_DIR / 'secret.dpapi'
+        if (STATE_DIR / 'connections.enc').exists() and not protected_keyfile.exists() and not keyfile.exists():
+            raise OSError('Falta la clave del estado existente.')
+        if os.name == 'nt' and (getattr(sys,'frozen',False) or protected_keyfile.exists()):
+            from portal.secret import dpapi
+            import secrets
+            if not protected_keyfile.exists():
+                seed = keyfile.read_text() if keyfile.exists() else secrets.token_urlsafe(64)
+                with protected_keyfile.open('xb') as file: file.write(dpapi(seed.encode()))
+                keyfile.unlink(missing_ok=True)
+            SECRET_KEY = dpapi(protected_keyfile.read_bytes(),decrypt=True).decode()
+        elif not keyfile.exists():
+            import secrets
+            try:
+                with keyfile.open('x') as file:
+                    file.write(secrets.token_urlsafe(64))
+                keyfile.chmod(0o600)
+            except FileExistsError:
+                pass
+        if not SECRET_KEY: SECRET_KEY = keyfile.read_text()
+except (OSError, ValueError, UnicodeError):
+    import secrets
+    # Clave temporal solo para abrir la interfaz de recuperación; no persiste estado.
+    SECRET_KEY = secrets.token_urlsafe(64)
+    STATE_KEY_ERROR = True
 DEBUG = False
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost,testserver').split(',')
 INSTALLED_APPS = ['django.contrib.staticfiles', 'portal']
@@ -49,7 +58,7 @@ SECURE_REFERRER_POLICY = 'same-origin'
 X_FRAME_OPTIONS = 'DENY'
 ROOT_URLCONF = 'portal.urls'
 TEMPLATES = [{'BACKEND': 'django.template.backends.django.DjangoTemplates', 'APP_DIRS': True,
-    'OPTIONS': {'context_processors': ['django.template.context_processors.request']}}]
+    'OPTIONS': {'context_processors': ['django.template.context_processors.request', 'portal.context.release']}}]
 DATABASES = {}
 STATIC_URL = '/static/'
 STATIC_ROOT = None

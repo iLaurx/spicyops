@@ -1,8 +1,9 @@
 from django.urls import path
 from . import views
-from .auth import open_panel
+from .auth import open_panel, protected
+from .recovery import recovery_page
 
-urlpatterns = [path('',views.analytics,name='analytics'), path('clientes/',views.clients,name='clients'),
+urlpatterns = [path("salir/", views.exit_panel, name="exit_panel"), path("respaldo/", protected(recovery_page), name="recovery"), path('',views.analytics,name='analytics'), path('clientes/',views.clients,name='clients'),
     path('conexiones/',views.connections,name='connections'), path('conexiones/nueva/',views.connect,name='connect'),
     path('conexiones/<str:profile_id>/configurar/',views.connect,name='configure'),
     path('conexiones/<str:profile_id>/leer/',views.refresh,name='refresh'),

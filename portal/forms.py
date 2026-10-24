@@ -12,8 +12,8 @@ class ConnectionForm(forms.Form):
     router_host = forms.GenericIPAddressField(label='IP del MikroTik', protocol='IPv4', required=False, help_text='Vacío: se usa la puerta de enlace de la Raspberry.')
     router_user = forms.CharField(label='Usuario API del MikroTik', max_length=80)
     router_password = forms.CharField(label='Contraseña API del MikroTik', max_length=256, strip=False, widget=forms.PasswordInput(attrs={'autocomplete':'new-password'}))
-    ca_file = forms.CharField(label='Certificado CA en Raspberry', max_length=300, initial='~/spicyops-ca.crt')
-    python_path = forms.CharField(label='Python con librouteros en Raspberry', max_length=300, initial='~/spicyops-prueba/.venv/bin/python')
+    ca_file = forms.CharField(label='Certificado CA en Raspberry', max_length=300, widget=forms.TextInput(attrs={'placeholder': '/ruta/al/certificado-ca.crt'}))
+    python_path = forms.CharField(label='Python con librouteros en Raspberry', max_length=300, initial='/usr/bin/python3', help_text='Ejecutable de Python que ya tiene librouteros en Raspberry.')
     fingerprint = forms.CharField(label='Huella SSH confirmada', max_length=100, required=False, widget=forms.HiddenInput)
     def clean_host(self):
         host = self.cleaned_data['host'].strip()

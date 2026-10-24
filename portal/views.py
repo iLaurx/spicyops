@@ -471,3 +471,14 @@ def automatic(request, profile_id):
     request.session['notice'] = ('Preferencia de actualización automática guardada.' if saved else
         'La localidad tiene una operación en curso. Espera a que termine.')
     return redirect('connections')
+
+
+@protected
+@require_POST
+def exit_panel(request):
+    if request.POST.get('confirmed') != 'yes':
+        return HttpResponseBadRequest('Confirma la salida de SpicyOps.')
+    from .runtime import exit_requested
+    exit_requested.set()
+    from django.http import HttpResponse
+    return HttpResponse('SpicyOps se está cerrando. Espera a que terminen las lecturas antes de volver a abrirlo.', content_type='text/plain; charset=utf-8')

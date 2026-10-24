@@ -39,6 +39,7 @@ def main():
     parser.add_argument('--port', type=int, default=0)
     parser.add_argument('--no-open', action='store_true')
     parser.add_argument('--state-dir')
+    parser.add_argument('--tray', action='store_true', help='Mantener bandeja incluso con --no-open')
     args = parser.parse_args()
     if args.state_dir:
         os.environ['SPICYOPS_STATE_DIR'] = str(Path(args.state_dir).resolve())
@@ -83,18 +84,33 @@ def main():
     if not args.no_open:
         threading.Timer(.6, reopen).start()
     try:
-        if os.name == 'nt' and not args.no_open:
+        from portal.runtime import exit_requested
+        if os.name == 'nt' and (not args.no_open or args.tray):
             import pystray
             from PIL import Image
             import portal
             thread=threading.Thread(target=server.run,daemon=True)
             thread.start()
-            def exit_app(icon,item): icon.stop()
+            def exit_app(icon,item):
+                exit_requested.set()
+                icon.stop()
             icon=pystray.Icon('SpicyOps',Image.open(Path(portal.__file__).parent/'static/portal/app.ico'),'SpicyOps',
                 pystray.Menu(pystray.MenuItem('Abrir SpicyOps',lambda icon,item:reopen(),default=True),
                     pystray.MenuItem('Salir de SpicyOps',exit_app)))
-            icon.run()
-        else: server.run()
+            def stop_when_requested():
+                exit_requested.wait()
+                icon.stop()
+            threading.Thread(target=stop_when_requested, daemon=True).start()
+            def tray_ready(icon):
+                icon.visible = True
+                info = json.loads(runtime.read_text())
+                info['tray_ready'] = True
+                runtime.write_text(json.dumps(info))
+            icon.run(setup=tray_ready)
+        else:
+            thread = threading.Thread(target=server.run, daemon=True)
+            thread.start()
+            exit_requested.wait()
     finally:
         coordinator.stop_event.set()
         server.close()
@@ -113,5 +129,5 @@ if __name__ == '__main__':
             raise SystemExit(1)
         elif getattr(sys,'frozen',False):
             import ctypes
-            ctypes.windll.user32.MessageBoxW(0, 'No se pudo abrir SpicyOps. Cierra otra instancia e inténtalo de nuevo.', 'SpicyOps', 0x10)
+            ctypes.windll.user32.MessageBoxW(0, 'No se pudo abrir SpicyOps. Comprueba espacio libre y permisos en tu carpeta de datos de Windows. Si hay otra instancia iniciándose, espera y vuelve a abrir. Conserva los archivos privados; no los borres.', 'SpicyOps', 0x10)
         else: raise

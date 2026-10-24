@@ -1,5 +1,7 @@
 # SpicyOps: guía visual de conexiones y tecnologías
 
+Complemento de topología. Para el paquete 1.0.0, primer uso, respaldos y actualización, sigue la [guía pública vigente](guia-publica.md). El PDF previo conserva su fecha histórica.
+
 Fecha: 17 de octubre de 2026. Las direcciones son ejemplos, no datos de una instalación real.
 
 ## 1. Varias Raspberry en la misma red de Tailscale
