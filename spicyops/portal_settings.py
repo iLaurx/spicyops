@@ -39,7 +39,7 @@ except (OSError, ValueError, UnicodeError):
     SECRET_KEY = secrets.token_urlsafe(64)
     STATE_KEY_ERROR = True
 DEBUG = False
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost,testserver').split(',')
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 INSTALLED_APPS = ['django.contrib.staticfiles', 'portal']
 MIDDLEWARE = ['django.middleware.security.SecurityMiddleware', 'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware', 'django.middleware.common.CommonMiddleware',

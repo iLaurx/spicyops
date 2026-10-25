@@ -1,6 +1,6 @@
 # Encargo vigente: SpicyOps para Windows
 
-Reemplaza el primer MVP local por indicación expresa del usuario. La aplicación anterior y sus pruebas quedan como evidencia histórica; no son la experiencia que se debe seguir ofreciendo.
+Reemplaza el primer MVP local por indicación expresa del usuario. La aplicación anterior y sus pruebas se retiraron por solicitud del propietario durante la limpieza previa a producción; no deben reintroducirse.
 
 El usuario administra varias localidades, cada una con Raspberry y MikroTik. Accede mediante SSH —por red local o Tailscale— y quiere conectar una localidad, verificar su router y recibir automáticamente la información. Aceptó un programa Windows como alternativa a un sitio público; esta opción aprovecha su acceso de red existente y evita publicar SSH o instalar PostgreSQL manualmente.
 

@@ -1,8 +1,0 @@
-{% load static %}<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{% block title %}SpicyOps · Laboratorio local{% endblock %}</title><link rel="stylesheet" href="{% static 'style.css' %}"></head>
-<body><header><a class="brand" href="/">SpicyOps<span>Control de servicios</span></a>
-{% if user.is_authenticated %}<nav><a href="/">Clientes</a><a href="{% url 'inventory' %}">Inventario</a><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="quiet">Salir · {{ user.username }}</button></form></nav>{% endif %}</header>
-<div class="banner">LABORATORIO · SIMULACIÓN PERSISTENTE <span>Sin conexión a equipos reales</span></div>
-<main>{% for message in messages %}<p role="status" class="notice">{{ message }}</p>{% endfor %}{% block content %}{% endblock %}</main>
-<footer>SpicyOps local · Una configuración verificada en simulación no acredita acceso ni velocidad en una vivienda.</footer></body></html>

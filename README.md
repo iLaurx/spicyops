@@ -50,14 +50,21 @@ SpicyOps utiliza la configuración de red existente. La preparación de SSH, Tai
 
 El programa abre una ventana de aplicación con Edge. Si Edge no está disponible, utiliza el navegador predeterminado. No lo ejecutes directamente desde el ZIP ni copies únicamente el archivo `.exe`.
 
-En este repositorio están disponibles estas distribuciones locales:
+Las distribuciones y compilaciones de prueba anteriores se retiraron durante la limpieza previa a producción. El siguiente paquete debe generarse desde las fuentes actuales; esta limpieza no genera ni publica un ejecutable nuevo.
 
-| Distribución | Ejecutable |
-| --- | --- |
-| Versión 1.0.0 original | `dist/SpicyOps-1.0.0-Windows/SpicyOps/SpicyOps.exe` |
-| Versión con rediseño visual | `dist/SpicyOps-redesign-Windows/SpicyOps/SpicyOps.exe` |
+La limpieza del código antiguo y de las distribuciones está realizada. Windows impidió retirar seis directorios temporales: `.local/ui-cleanup-build`, `.local/ui-cleanup-preview`, `.local/ui-cleanup-tests`, `build/audit-tests`, `build/release-review` y `build/release-tests`. Se requiere acceso del propietario de esas carpetas para completar su eliminación. No se incluyen en el empaquetado.
 
-Ambas conservan la versión interna 1.0.0. Son paquetes preparados localmente, sin firma digital ni publicación remota. El selector **Oscuro / Claro** y las correcciones posteriores del formulario están en el código actual, pero todavía no se incorporaron al paquete del rediseño; su disponibilidad depende de la edición que abras.
+## Ejecutar y preparar el paquete desde las fuentes
+
+Con Python y las dependencias de `requirements.txt` instalados, ejecuta `python run_panel.py` para abrir la aplicación. Para construir la distribución Windows, instala también `requirements-build.txt` y ejecuta, en este orden:
+
+```powershell
+python scripts/collect_notices.py
+python scripts/build_windows.py
+python scripts/package_windows.py
+```
+
+El ejecutable se genera en `dist/SpicyOps-1.0.0-Windows/SpicyOps/SpicyOps.exe` y el ZIP junto a esa carpeta. Se conservan las licencias y fuentes de terceros necesarias para distribuirlo. Las suites, simuladores, herramientas de pruebas, capturas y reportes históricos se eliminaron por solicitud del propietario; no hay un comando de tests incluido en este árbol.
 
 ## Conectar la primera localidad
 

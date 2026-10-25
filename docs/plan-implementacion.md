@@ -1,6 +1,6 @@
 # Plan de implementación y validación
 
-Este documento conserva la secuencia propuesta. Posteriormente, el usuario preparó API-SSL y permisos de MikroTik e instaló un entorno de diagnóstico en Raspberry; las salidas y cierre están en preparación-mikrotik.md y prueba-cliente-011.md. Todavía no se implementó aplicación ni agente permanente. El próximo incremento ejecutable está definido en [encargo del MVP local](encargo-mvp-local.md).
+Este documento conserva la secuencia propuesta. Posteriormente, el usuario preparó API-SSL y permisos de MikroTik e instaló un entorno de diagnóstico en Raspberry; las salidas y cierre están en preparación-mikrotik.md y prueba-cliente-011.md. Este plan pertenece al MVP sustituido; su código y sus pruebas se retiraron. Para el producto Windows implementado, consultar el [encargo vigente](encargo-panel-conectado.md) y el [README](../README.md).
 
 ## Etapa 0: inventario y decisiones del piloto
 

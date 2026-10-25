@@ -1,3 +1,0 @@
-# El agente simulado solo necesita la biblioteca estándar de Python 3.11+.
-# Transporte futuro (puro Python; validar instalación y recursos en ARMv6).
-librouteros==4.2.2
