@@ -50,7 +50,7 @@ SpicyOps utiliza la configuración de red existente. La preparación de SSH, Tai
 
 El programa abre una ventana de aplicación con Edge. Si Edge no está disponible, utiliza el navegador predeterminado. No lo ejecutes directamente desde el ZIP ni copies únicamente el archivo `.exe`.
 
-Las distribuciones y compilaciones de prueba anteriores se retiraron durante la limpieza previa a producción. El siguiente paquete debe generarse desde las fuentes actuales; esta limpieza no genera ni publica un ejecutable nuevo.
+Las distribuciones y compilaciones de prueba anteriores se retiraron durante la limpieza previa a producción. El 25 de octubre de 2026 se generó un nuevo ejecutable como candidato de revisión local. Consulta `docs/revision-publicacion-2026-10-25.md` para resultados y pendientes; todavía no se ha publicado.
 
 La limpieza del código antiguo y de las distribuciones está realizada. Windows impidió retirar seis directorios temporales: `.local/ui-cleanup-build`, `.local/ui-cleanup-preview`, `.local/ui-cleanup-tests`, `build/audit-tests`, `build/release-review` y `build/release-tests`. Se requiere acceso del propietario de esas carpetas para completar su eliminación. No se incluyen en el empaquetado.
 

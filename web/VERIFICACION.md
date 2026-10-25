@@ -53,3 +53,11 @@ Para publicar falta autorización, destino y acceso al repositorio/proveedor ele
 ## Simplificación de acceso · 25 de octubre de 2026
 
 Ruta rápida de tres pasos sin comandos obligatorios para localidades preparadas. Preparación y diagnóstico en desplegables; prueba TLS equivalente retirada; receta de usuario según modo elegido. Verificados en navegador local el selector de control y el enlace que abre escritura. Compilación, siete tests y análisis estático del script Python correctos. Captura: `evidence/acceso-rapido.png`. No se realizaron conexiones ni cambios en Raspberry o MikroTik.
+
+## Revisión para publicación · 25 de octubre de 2026
+
+Se repitieron build (incluye TypeScript), siete tests, análisis estático Python y auditoría npm: correctos; cero vulnerabilidades reportadas. El contenido actual tiene 17 secciones, 36 bloques y un bloque Python. Se actualizó la prueba de navegador para abrir los desplegables antes de interactuar y comprobar esos conteos. La suite completa de Edge pasó con base `/`; se regeneraron `evidence/browser-results.json`, capturas y PDF. Sin peticiones externas ni errores de página/HTTP en el recorrido comprobado. La captura de 360 px se revisó visualmente. No se repitió la prueba de subruta en esta revisión. El dictamen conjunto y los límites están en `../docs/revision-publicacion-2026-10-25.md`. No se publicó el sitio.
+
+## Modo oscuro · 25 de octubre de 2026
+
+Paleta tomada de `portal/static/portal/app.css`, con selector Oscuro/Claro y preferencia independiente del progreso. Build con TypeScript y siete tests correctos. `node scripts/theme-check.mjs` pasó en Edge local: fondo oscuro de la app, ausencia de desbordamiento a 320/360/430/768/1024/1440 px, selector visible, activación por teclado, persistencia tras recarga, sincronización entre pestañas, aislamiento al borrar progreso, búsqueda, impresión clara, almacenamiento bloqueado y contenido sin JavaScript. La prueba usa preview en 4173 por defecto o `QA_URL`; esta ejecución usó 4175. Capturas revisadas visualmente: `evidence/theme-dark-1440.png` y `evidence/theme-dark-360.png`; también se generó `evidence/theme-light-1440.png`. La suite general de navegador y la subruta no se repitieron en este cambio. Cambios preparados localmente; no se desplegó en Vercel.

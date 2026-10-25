@@ -42,6 +42,7 @@ assert.ok((await page.locator('#completar-spicyops').textContent()).includes('/h
 assert.equal(await page.evaluate(()=>JSON.stringify(localStorage).includes('10.50.0.1')),false);
 const download=await page.locator('#download-python').getAttribute('href');
 assert.ok(await page.evaluate(async url=>(await(await fetch(url)).text()).includes('ip = "10.50.0.1"'),download));
+await page.locator('.sidebar a[href="#validar-tls"]').click();
 const copy=page.locator('#validar-tls .copy:not([disabled])').first();await copy.click();
 assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),await copy.locator('xpath=ancestor::figure').locator('code').textContent());
 await page.evaluate(()=>{navigator.clipboard.writeText=async()=>{throw new Error('Clipboard unavailable for fallback test');};});

@@ -25,6 +25,7 @@ npm run typecheck
 npm test
 python scripts/check_python.py
 node scripts/browser-check.mjs
+node scripts/theme-check.mjs
 ```
 
 La última comprobación requiere Edge instalado y el servidor preview accesible en `http://127.0.0.1:4173/`; puedes cambiarlo con `QA_URL`. Genera las capturas y el PDF de impresión en `evidence/`. Python solo analiza sintaxis y contrato de las recetas, sin importarlas ni ejecutarlas contra equipos.
@@ -33,6 +34,7 @@ Runtime utilizado: Node 24.21.0, npm 11.19.0, Python 3.14.7. Dependencias fijada
 
 ## Contenido y comportamiento
 
+- Selector **Oscuro / Claro** en la cabecera, con la paleta del programa Windows. Abre en oscuro y recuerda la elección en este navegador; solo guarda el tema en `spicyops-guide-theme-v1`, separado del progreso. Funciona también sin almacenamiento disponible y mantiene la impresión en claro. `src/theme.js` restaura la apariencia antes de pintar la página; el generador lo incluye en la cabecera.
 - `src/content/guide.json`: contenido público seleccionado y adaptado; no se publican los Markdown internos completos.
 - `scripts/content.mjs`: genera HTML completo, metadatos de comandos y descargas desde esa fuente. Se ejecuta automáticamente al iniciar o compilar.
 - `src/content/commands.json`: modelo generado de terminal, acción, privilegios, prerrequisitos, resultado, fuentes y marcadores.
