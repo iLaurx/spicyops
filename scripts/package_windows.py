@@ -58,7 +58,7 @@ for file in folder.rglob('*'):
         assert not any(part in ('.local','config-mikro','config-antenasyclientes','fixtures','tests','backups') or part.startswith('original-') for part in file.parts)
         assert file.name not in ('secret.key','secret.dpapi','connections.enc','runtime.json')
 archive=args.archive.resolve()
-for source, target in [('docs/guia-publica.md', 'GUIA.md'), ('docs/release-1.0.0.md', 'NOTAS-DE-VERSION.md'), ('docs/THIRD-PARTY-NOTICES.txt', 'THIRD-PARTY-NOTICES.txt')]:
+for source, target in [('LICENSE', 'LICENSE'), ('docs/guia-publica.md', 'GUIA.md'), ('docs/release-1.0.0.md', 'NOTAS-DE-VERSION.md'), ('docs/THIRD-PARTY-NOTICES.txt', 'THIRD-PARTY-NOTICES.txt')]:
     shutil.copyfile(root/source, folder/target)
 shutil.copytree(root/'build'/'release-notices'/'licenses', folder/'licenses', dirs_exist_ok=True)
 shutil.copyfile(root/'build'/'release-notices'/'LGPL-sources.zip', folder/'LGPL-sources.zip')

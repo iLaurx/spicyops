@@ -286,4 +286,8 @@ SpicyOps importa servicios de **colas simples de RouterOS 6 y 7**. PPPoE, RADIUS
 
 La aplicación y el ejecutable se han comprobado localmente con datos de prueba y conexiones SSH controladas. La validación física completa con Raspberry, MikroTik y reglas de bloqueo sigue pendiente, al igual que la comprobación en un Windows limpio. La compatibilidad física con RouterOS 7 aún no está acreditada.
 
-La licencia de uso propia y el canal de soporte están pendientes de definición. Consulta los [avisos y licencias de componentes de terceros](docs/THIRD-PARTY-NOTICES.txt) incluidos con el proyecto.
+SpicyOps se distribuye bajo la [licencia MIT](LICENSE). Los componentes de terceros conservan sus propias licencias; consulta los [avisos y licencias de componentes de terceros](docs/THIRD-PARTY-NOTICES.txt). El canal de soporte está pendiente de definición.
+
+## Guía web de conexión
+
+La guía educativa estática está en [`web/`](web/README.md), separada del programa Windows. Para abrirla desde esa carpeta: `npm ci` y `npm run dev` con Node 24. Incluye build para Vercel y GitHub Pages, sin publicación ni conexión a equipos reales. Consulta [`web/VERIFICACION.md`](web/VERIFICACION.md) para pruebas y limitaciones.

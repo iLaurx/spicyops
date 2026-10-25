@@ -1,0 +1,489 @@
+<!doctype html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Guía de campo para conectar SpicyOps con Raspberry y MikroTik: Tailscale, SSH y API-SSL, paso a paso."><title>Conecta tu red · SpicyOps</title><link rel="stylesheet" href="/src/styles.css"></head><body><a class="skip" href="#contenido">Saltar al contenido</a><header class="topbar"><a class="brand" href="#inicio"><span class="brand-icon">S.</span> SPICYOPS <span class="brand-sub">/ Guía de conexión</span></a><span class="edition">CUADERNO TÉCNICO · 01</span><button type="button" id="print">Imprimir guía</button></header><div class="layout"><aside class="sidebar"><div class="eyebrow">TU RUTA DE CONEXIÓN</div><label class="search-label" for="search">Buscar en la guía</label><input type="search" id="search" placeholder="Ej. certificado, SSH…"><p id="search-status" role="status"></p><nav aria-label="Etapas"><a href="#acceso-rapido"><b>↳</b><span>Conectar en 3 pasos</span></a><a href="#antes-de-empezar"><b>↳</b><span>Antes de empezar</span></a><a href="#tailscale-raspberry"><b>01</b><span>Instalar Tailscale en Raspberry</span></a><a href="#tailscale-windows"><b>02</b><span>Tailscale en Windows y permisos</span></a><a href="#raspberry-ssh"><b>03</b><span>OpenSSH y huella de Raspberry</span></a><a href="#raspberry-python"><b>04</b><span>Python y librouteros</span></a><a href="#mikrotik-inventario"><b>05</b><span>Inspeccionar MikroTik</span></a><a href="#mikrotik-certificados"><b>06</b><span>Crear CA y certificado de servidor</span></a><a href="#mikrotik-api"><b>07</b><span>Usuario API, modo elegido y servicio cifrado</span></a><a href="#mikrotik-firewall"><b>08</b><span>Firewall</span></a><a href="#validar-tls"><b>09</b><span>Transferir CA y validar TLS</span></a><a href="#lecturas-api"><b>↳</b><span>Diagnóstico API manual · opcional</span></a><a href="#completar-spicyops"><b>10</b><span>Completar el perfil en SpicyOps</span></a><a href="#modo-escritura"><b>↳</b><span>Control de Morosos y localidad ya preparada</span></a><a href="#errores"><b>↳</b><span>Solución de errores</span></a><a href="#mantenimiento"><b>↳</b><span>Mantenimiento y localidades</span></a><a href="#administracion-avanzada"><b>↳</b><span>Administración avanzada</span></a><a href="#glosario"><b>↳</b><span>Glosario y recursos</span></a></nav><details class="progress-panel"><summary>Mi progreso</summary><div class="progress-box"><label><input id="remember" type="checkbox"> Guardar mi progreso en esta PC</label><progress max="10" value="0" aria-label="Etapas declaradas completas"></progress><p id="progress-text">0 de 10 etapas comprobadas</p><button id="clear" type="button">Borrar progreso local</button><small>Solo etapas marcadas. Nunca tus accesos.</small></div></details></aside><main id="contenido"><section id="inicio" class="hero"><span class="eyebrow">WINDOWS → RASPBERRY PI → MIKROTIK</span><h1>Conecta tu red<br>con <em>SpicyOps.</em></h1><p class="lead">Si tu localidad ya está preparada, conecta desde SpicyOps.<br>Sin repetir instalaciones ni pruebas por terminal.</p><div class="hero-actions"><a class="primary" href="#acceso-rapido">Conectar en 3 pasos <span>↗</span></a><button type="button" id="prepare-all">Preparar desde cero →</button></div><figure class="network"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 245" role="img" aria-labelledby="title desc">
+<title id="title">Windows conecta a Raspberry y Raspberry consulta MikroTik</title><desc id="desc">SSH puerto 22 por Tailscale. API-SSL puerto 8729 por red local con certificado validado.</desc>
+<defs><pattern id="grid" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M22 0H0V22" fill="none" stroke="#d8cbb7" stroke-width=".5"/></pattern></defs>
+<rect width="860" height="245" rx="12" fill="url(#grid)"/>
+<g stroke="#18213d" stroke-width="2.5" stroke-linejoin="round">
+<path d="M185 137H357M485 137H652" fill="none" stroke="#347a7c" stroke-width="4" stroke-dasharray="7 5"/>
+<ellipse cx="116" cy="182" rx="69" ry="9" fill="#d3bea3" stroke="none"/>
+<path d="m62 58 116-12 25 15v100l-117 12-24-15z" fill="#718598"/><path d="m86 72 117-11v100L86 173z" fill="#e9dcca"/><path d="m98 83 92-9v73l-92 9z" fill="#24304a"/><path d="m137 168 0 20-32 9 69 1-23-12v-19" fill="#718598"/>
+<path d="m111 117 17-12m-17 12 18 9m12 0 27-3" stroke="#71d0c7" fill="none"/>
+<ellipse cx="420" cy="177" rx="65" ry="10" fill="#d3bea3" stroke="none"/>
+<path d="m357 112 82-24 47 27-82 25z" fill="#7b9d91"/><path d="m357 112 47 28v24l-47-28z" fill="#4d7374"/><path d="m404 140 82-25v25l-82 24z" fill="#91b7a6"/>
+<path d="m384 113 33-10 21 12-33 10z" fill="#24304a"/><path d="m449 132 26-8v12l-26 8z" fill="#e9dcca"/><path d="m367 103v-13m10 10V87m10 10V84"/>
+<ellipse cx="720" cy="183" rx="76" ry="9" fill="#d3bea3" stroke="none"/>
+<path d="m650 125 91-25 53 27-92 26z" fill="#f9f2e5"/><path d="m650 125 52 28v26l-52-28z" fill="#718598"/><path d="m702 153 92-26v27l-92 25z" fill="#b3b9b6"/>
+<path d="m663 126 0-65m117 63V55" stroke-width="6"/><path d="m714 157 11-3v9l-11 3zm19-6 11-3v9l-11 3zm19-5 11-3v9l-11 3z" fill="#24304a"/>
+<circle cx="778" cy="146" r="3" fill="#1aa3a1"/>
+</g><g fill="#18213d" font-family="Segoe UI,sans-serif" font-size="14" text-anchor="middle"><text x="125" y="224">WINDOWS · SpicyOps</text><text x="420" y="224">RASPBERRY PI</text><text x="725" y="224">MIKROTIK</text><text x="277" y="91">SSH · 22</text><text x="569" y="91">API-SSL · 8729</text><text x="277" y="181" font-size="12">Tailscale / LAN</text><text x="569" y="181" font-size="12">LAN · TLS validado</text></g></svg>
+<figcaption>Windows entra por SSH. Raspberry consulta el router por su red local.</figcaption></figure><div class="facts"><span><b>3</b> pasos para conectar</span><span><b>100%</b> contenido local</span><span><b>0</b> contraseñas en esta web</span></div></section><div class="mobile-nav"><label for="stage-select">Ir a una etapa</label><select id="stage-select"><option value="acceso-rapido">Conectar en 3 pasos</option><option value="antes-de-empezar">Antes de empezar</option><option value="tailscale-raspberry">1. Instalar Tailscale en Raspberry</option><option value="tailscale-windows">2. Tailscale en Windows y permisos</option><option value="raspberry-ssh">3. OpenSSH y huella de Raspberry</option><option value="raspberry-python">4. Python y librouteros</option><option value="mikrotik-inventario">5. Inspeccionar MikroTik</option><option value="mikrotik-certificados">6. Crear CA y certificado de servidor</option><option value="mikrotik-api">7. Usuario API, modo elegido y servicio cifrado</option><option value="mikrotik-firewall">8. Firewall</option><option value="validar-tls">9. Transferir CA y validar TLS</option><option value="lecturas-api">Diagnóstico API manual · opcional</option><option value="completar-spicyops">Completar el perfil en SpicyOps</option><option value="modo-escritura">Control de Morosos y localidad ya preparada</option><option value="errores">Solución de errores</option><option value="mantenimiento">Mantenimiento y localidades</option><option value="administracion-avanzada">Administración avanzada</option></select><div><button id="previous">← Anterior</button><button id="next">Siguiente →</button></div></div><section class="setup" id="recorrido"><div><span class="eyebrow">01 · ELIGE TU RECORRIDO</span><h2>El permiso justo para tu tarea.</h2></div><fieldset><legend>Modo de preparación</legend><label class="route"><input type="radio" name="mode" value="read" checked><strong>Consultar datos</strong><span>Clientes y consumo · read,api</span></label><label class="route"><input type="radio" name="mode" value="control"><strong>Consultar y controlar</strong><span>Morosos con confirmación · read,write,api</span></label></fieldset><p id="mode-note">Consulta: no necesitas escritura. Si la localidad ya funciona, ve directo al perfil; la preparación se abre solo cuando hace falta.</p><details id="config"><summary>Personalizar los ejemplos · sin contraseñas</summary><p>Se usan únicamente en esta pestaña. Las descargas iniciales conservan el escenario ficticio; el script Python se adapta al aplicar estos datos.</p><form id="config-form"><label>IPv4 MikroTik<input name="router" value="192.168.88.1" autocomplete="off" spellcheck="false" required maxlength="253"></label><label>IPv4 LAN Raspberry<input name="lan" value="192.168.88.90" autocomplete="off" spellcheck="false" required maxlength="253"></label><label>IP / nombre Raspberry<input name="host" value="100.70.10.1" autocomplete="off" spellcheck="false" required maxlength="253"></label><label>Puerto SSH<input name="port" value="22" autocomplete="off" spellcheck="false" required maxlength="253"></label><label>Usuario Linux<input name="linux" value="operador" autocomplete="off" spellcheck="false" required maxlength="253"></label><label>Usuario API<input name="api" value="spicyops-agent" autocomplete="off" spellcheck="false" required maxlength="253"></label><button class="primary" type="submit">Aplicar a los ejemplos</button><button type="reset">Restablecer ejemplos</button></form><p id="config-status" role="status"></p></details></section><p class="reading-note">Lee, adapta y verifica en cada equipo. Esta guía no ejecuta comandos ni comprueba tu red.</p><div id="chapters"><section id="acceso-rapido" class="chapter" data-title="Conectar en 3 pasos"><header class="chapter-header"><span class="eyebrow">CUADERNO DE CAMPO</span><h2>Conectar en 3 pasos</h2></header><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Windows · SpicyOps</p><p><strong>Qué necesitas</strong>Localidad preparada y accesos disponibles</p><p><strong>Qué debes ver</strong>Huella confirmada y lectura del router.</p></div><p>Para una localidad que ya tiene SSH, Python con librouteros, CA y API-SSL preparados. <strong>No repitas la instalación: puedes conectar sin ejecutar comandos.</strong></p>
+<ol>
+<li><strong>Ten los accesos a mano.</strong> Dirección y usuario SSH de Raspberry, usuario API del MikroTik, contraseñas o clave autorizada, IP del router y rutas de Python y CA en Raspberry. Si entras desde fuera, conecta Windows a tu Tailscale habitual. En LAN no hace falta VPN.</li>
+<li><strong>Abre SpicyOps → Conexiones → Nueva localidad.</strong> Completa los campos del <a href="#completar-spicyops">resumen del perfil</a>. Las contraseñas se introducen en el programa, nunca aquí.</li>
+<li><strong>Pulsa Comprobar y conectar.</strong> Compara la huella SSH con la del administrador y confirma si coincide. Si aparece un error, usa Diagnosticar y abre únicamente el apartado que corresponda.</li>
+</ol>
+<p><strong>¿Quieres suspender o reactivar clientes?</strong> Además necesitas una cuenta con <code>read,write,api</code> y una política Morosos ya revisada. Si solo falta ese permiso, ve a <a href="#modo-escritura">activar escritura sin reinstalar</a>. Conectar no prueba una suspensión.</p>
+<p><strong>¿Es una red nueva?</strong> Abre la preparación desde cero. Instala únicamente lo que falte. No necesitas anunciar subredes, habilitar forwarding, instalar un agente permanente ni configurar un portal para conectar SpicyOps.</p>
+</section>
+<details id="antes-de-empezar" class="chapter preparation" data-title="Antes de empezar"><summary aria-label="Antes de empezar"><header class="chapter-header"><span class="eyebrow">CUADERNO DE CAMPO</span><h2>Antes de empezar</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Los tres equipos</p><p><strong>Qué necesitas</strong>Accesos administrativos y vía de recuperación</p><p><strong>Qué debes ver</strong>Identifica tu SO, arquitectura e IP LAN.</p></div><p>Requerir Raspberry Pi OS compatible, alimentación estable, internet/DNS y acceso inicial local o SSH LAN; usuario existente, sin asumir <code>pi</code>; acceso administrativo autorizado a MikroTik; conectividad LAN entre ambos; hora correcta en los tres equipos e IP LAN estable de Raspberry, preferiblemente reserva DHCP preparada por el administrador.</p>
+<p>Registrar SO, arquitectura y RouterOS. ARMv6 no equivale a ARMv7/ARM64. La guía no reinstala el SO, crea abonados ni modifica planes. SpicyOps importa colas simples IPv4 individuales existentes.</p>
+<p>Escenario completamente ficticio:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Tabla de referencia"><table>
+<thead>
+<tr>
+<th>Dato</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Localidad</td>
+<td>Localidad de ejemplo</td>
+</tr>
+<tr>
+<td>MikroTik LAN</td>
+<td><code>192.168.88.1</code></td>
+</tr>
+<tr>
+<td>Raspberry LAN</td>
+<td><code>192.168.88.90</code></td>
+</tr>
+<tr>
+<td>Raspberry Tailscale</td>
+<td><code>100.70.10.1</code></td>
+</tr>
+<tr>
+<td>Windows Tailscale</td>
+<td><code>100.70.10.2</code></td>
+</tr>
+<tr>
+<td>Usuario Linux</td>
+<td><code>operador</code></td>
+</tr>
+<tr>
+<td>Usuario API</td>
+<td><code>spicyops-agent</code></td>
+</tr>
+<tr>
+<td>Python</td>
+<td><code>/home/operador/spicyops-venv/bin/python</code></td>
+</tr>
+<tr>
+<td>CA</td>
+<td><code>/home/operador/spicyops-certs/spicyops-ca.crt</code></td>
+</tr>
+</tbody></table>
+</div><p>La IP LAN de Raspberry no es su IP Tailscale: MikroTik normalmente ve la primera como origen de la API. Son ejemplos; esta guía no detecta tus equipos.</p>
+</details>
+<details id="tailscale-raspberry" class="chapter preparation" data-title="1. Instalar Tailscale en Raspberry"><summary aria-label="1. Instalar Tailscale en Raspberry"><header class="chapter-header"><span class="eyebrow">ETAPA 01 / 10</span><h2>1. Instalar Tailscale en Raspberry</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Raspberry · Bash</p><p><strong>Qué necesitas</strong>SO compatible e internet</p><p><strong>Qué debes ver</strong>Servicio activo e IP Tailscale asignada.</p></div><p><strong>Raspberry · Bash.</strong> Consultar primero:</p>
+<figure class="command" data-command="1" data-language="bash" data-action="Consulta"><figcaption><span>Raspberry · Bash</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>cat /etc/os-release
+uname -m
+python3 --version
+date -Is
+ip -br address
+ip route</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Identifica distribución, arquitectura, IP y ruta en la salida. Python se prepara en el paso 4 si falta. No reinstalar el sistema ni borrar la microSD.</p>
+<p>Para Raspberry Pi OS compatible con el instalador oficial:</p>
+<figure class="command" data-command="2" data-language="bash" data-action="Instalación"><figcaption><span>Raspberry · Bash</span><span class="kind">Instalación</span></figcaption><div class="command-meta">sudo en los comandos indicados · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>sudo apt-get update
+sudo apt-get install -y curl ca-certificates
+curl -fsSL https://tailscale.com/install.sh -o /tmp/spicyops-tailscale-install.sh
+less /tmp/spicyops-tailscale-install.sh</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Pulsa <code>q</code> para salir de <code>less</code>. Tras descargar y revisar, instala:</p>
+<figure class="command" data-command="3" data-language="bash" data-action="Configuración"><figcaption><span>Raspberry · Bash</span><span class="kind">Configuración</span></figcaption><div class="command-meta">sudo en los comandos indicados · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>sh /tmp/spicyops-tailscale-install.sh
+sudo systemctl enable --now tailscaled
+sudo tailscale up</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>El instalador puede pedir privilegios. Abrir en navegador la URL de autenticación que devuelve y registrar el dispositivo en la tailnet autorizada. No pegar esa URL en chats ni almacenarla en la web.</p>
+<p>Verificar:</p>
+<figure class="command" data-command="4" data-language="bash" data-action="Consulta"><figcaption><span>Raspberry · Bash</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>tailscale version
+tailscale ip -4
+tailscale status
+systemctl is-active tailscaled</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Resultado: servicio activo, autenticación completada e IP Tailscale asignada. Si requiere aprobación del dispositivo, completarla en la consola administrativa.</p>
+<p>Si el instalador no soporta SO/arquitectura, detener la receta y dirigir al selector oficial. No descargar binarios ARM al azar ni prometer cualquier Raspberry antigua. No usar <code>--ssh</code>, <code>--advertise-routes</code> o <code>--advertise-exit-node</code>.</p>
+<p>Fuentes: <a href="https://tailscale.com/docs/install/linux">Linux</a>, <a href="https://pkgs.tailscale.com/stable/">paquetes estables</a>.</p>
+<label class="check"><input type="checkbox" data-step="tailscale-raspberry"> Ya lo comprobé <small>Declaración personal; la web no prueba equipos.</small></label></details>
+<details id="tailscale-windows" class="chapter preparation" data-title="2. Tailscale en Windows y permisos"><summary aria-label="2. Tailscale en Windows y permisos"><header class="chapter-header"><span class="eyebrow">ETAPA 02 / 10</span><h2>2. Tailscale en Windows y permisos</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Windows · PowerShell</p><p><strong>Qué necesitas</strong>Tailscale y política autorizada</p><p><strong>Qué debes ver</strong>Acceso VPN; SSH se verifica por separado.</p></div><p>Instalar desde el sitio oficial, iniciar sesión y comprobar que Windows y Raspberry pertenecen a la misma tailnet o tienen acceso compartido autorizado. Estar en la misma tailnet no garantiza permiso TCP 22.</p>
+<p><strong>Windows · PowerShell:</strong></p>
+<figure class="command" data-command="5" data-language="powershell" data-action="Consulta"><figcaption><span>Windows · PowerShell</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>tailscale status
+tailscale ping 100.70.10.1
+Test-NetConnection 100.70.10.1 -Port 22</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Si no encuentra <code>tailscale</code>, reabrir terminal o usar la ruta instalada, normalmente:</p>
+<figure class="command" data-command="6" data-language="powershell" data-action="Consulta"><figcaption><span>Windows · PowerShell</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>&amp; &quot;$env:ProgramFiles\Tailscale\tailscale.exe&quot; status</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>El ping VPN no sustituye SSH. TCP 22 puede fallar todavía porque OpenSSH no esté habilitado hasta el paso siguiente.</p>
+<p>Para tailnets restrictivas, este <strong>fragmento de grant</strong> se integra por el administrador en la política existente:</p>
+<figure class="command" data-command="7" data-language="json" data-action="Consulta"><figcaption><span>Consola Tailscale · fragmento JSON</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Administrador de tailnet · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>{
+  &quot;src&quot;: [&quot;100.70.10.2&quot;],
+  &quot;dst&quot;: [&quot;100.70.10.1&quot;],
+  &quot;ip&quot;: [&quot;tcp:22&quot;]
+}</code></pre><div class="copy-row"><small>Plantilla: resuelve los marcadores fuera de la web.</small><button type="button" class="copy" disabled>Copiar</button></div></figure><p>No es una política completa. No reemplazar toda la política ni dar acceso global. Los permisos son acumulativos: este fragmento no revoca otras reglas más amplias.</p>
+<p>Usar OpenSSH normal; no habilitar Tailscale SSH. Si ya está habilitado en Raspberry, el administrador debe revisar esa configuración antes de continuar. Revísala desde una sesión administrativa confiable.</p>
+<p>Fuentes: <a href="https://tailscale.com/docs/install/windows">Windows</a>, <a href="https://tailscale.com/docs/reference/syntax/grants">grants</a>, <a href="https://tailscale.com/docs/reference/examples/grants">ejemplos</a>. Consulta las condiciones vigentes del proveedor.</p>
+<label class="check"><input type="checkbox" data-step="tailscale-windows"> Ya lo comprobé <small>Declaración personal; la web no prueba equipos.</small></label></details>
+<details id="raspberry-ssh" class="chapter preparation" data-title="3. OpenSSH y huella de Raspberry"><summary aria-label="3. OpenSSH y huella de Raspberry"><header class="chapter-header"><span class="eyebrow">ETAPA 03 / 10</span><h2>3. OpenSSH y huella de Raspberry</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Raspberry y Windows</p><p><strong>Qué necesitas</strong>Consola confiable para comparar huella</p><p><strong>Qué debes ver</strong>Servicio SSH activo e identidad coincidente.</p></div><p><strong>Raspberry · Bash</strong>, desde consola inicial o acceso LAN existente:</p>
+<figure class="command" data-command="8" data-language="bash" data-action="Instalación"><figcaption><span>Raspberry · Bash</span><span class="kind">Instalación</span></figcaption><div class="command-meta">sudo en los comandos indicados · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>sudo apt-get install -y openssh-server
+sudo systemctl enable --now ssh
+systemctl is-active ssh
+sudo sshd -t
+ss -ltn 'sport = :22'</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>La cuenta de SpicyOps no necesita sudo para ejecutar el lector; necesita sesión SSH y lectura de su entorno/CA. Conservar la autenticación acordada por el administrador. No habilitar root o contraseñas globalmente como arreglo genérico.</p>
+<p>Si existe firewall local, permitir únicamente el acceso necesario desde la PC autorizada por <code>tailscale0</code> al puerto SSH. No activar, vaciar o reemplazar UFW/nftables como receta universal. Política Tailscale y firewall Linux son controles distintos.</p>
+<p>Desde consola confiable, obtener huellas:</p>
+<figure class="command" data-command="9" data-language="bash" data-action="Configuración"><figcaption><span>Raspberry · Bash</span><span class="kind">Configuración</span></figcaption><div class="command-meta">sudo en los comandos indicados · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>sudo ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256
+sudo ssh-keygen -lf /etc/ssh/ssh_host_ecdsa_key.pub -E sha256
+sudo ssh-keygen -lf /etc/ssh/ssh_host_rsa_key.pub -E sha256</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Un archivo puede no existir. Comparar con la huella del <strong>mismo tipo de clave</strong>; OpenSSH y Paramiko pueden negociar tipos distintos. No aceptar huellas sin verificar ni borrar <code>known_hosts</code> ante un cambio.</p>
+<p><strong>Windows · PowerShell:</strong></p>
+<figure class="command" data-command="10" data-language="powershell" data-action="Consulta"><figcaption><span>Windows · PowerShell</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>ssh -p 22 operador@100.70.10.1</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Si faltan <code>ssh</code>/<code>scp</code>, instala la característica opcional <strong>Cliente OpenSSH</strong> de Windows. SpicyOps incluye su cliente: esta característica es solo para pruebas/transferencias manuales.</p>
+<p>Ruta básica: contraseña de cuenta existente si ya está permitida. Alternativa: clave privada Windows previamente autorizada en <code>authorized_keys</code>, sin sobrescribir claves anteriores. Enlazar el procedimiento oficial de preparación. No exigir contraseña en un equipo que funciona solo con claves.</p>
+<p>Fuente: <a href="https://www.raspberrypi.com/documentation/computers/remote-access.html">acceso remoto de Raspberry Pi</a>.</p>
+<label class="check"><input type="checkbox" data-step="raspberry-ssh"> Ya lo comprobé <small>Declaración personal; la web no prueba equipos.</small></label></details>
+<details id="raspberry-python" class="chapter preparation" data-title="4. Python y librouteros"><summary aria-label="4. Python y librouteros"><header class="chapter-header"><span class="eyebrow">ETAPA 04 / 10</span><h2>4. Python y librouteros</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Raspberry · Bash</p><p><strong>Qué necesitas</strong>Python 3.11 compatible</p><p><strong>Qué debes ver</strong>Importación de librouteros desde el venv.</p></div><p><strong>Raspberry · Bash.</strong> Entorno virtual, sin <code>--break-system-packages</code>:</p>
+<figure class="command" data-command="11" data-language="bash" data-action="Instalación"><figcaption><span>Raspberry · Bash</span><span class="kind">Instalación</span></figcaption><div class="command-meta">sudo en los comandos indicados · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>sudo apt-get install -y python3 python3-venv openssl
+python3 --version
+python3 -m venv &quot;$HOME/spicyops-venv&quot;
+&quot;$HOME/spicyops-venv/bin/python&quot; -m pip install &quot;librouteros==4.2.2&quot;
+&quot;$HOME/spicyops-venv/bin/python&quot; -m pip check
+&quot;$HOME/spicyops-venv/bin/python&quot; -c &quot;import ssl, librouteros; from importlib.metadata import version; print(version('librouteros')); print(ssl.OPENSSL_VERSION)&quot;
+printf '%s\n' &quot;$HOME/spicyops-venv/bin/python&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Guardar la ruta absoluta del ejecutable dentro del venv. No resolver el enlace simbólico y poner el Python del sistema: perdería la biblioteca del entorno.</p>
+<p>Python 3.11 es la base contemplada por el lector. Si falta, revisar compatibilidad antes de seguir; no actualizar remotamente el SO sin un plan. librouteros 4.2.2 es una base explícita, no una promesa de validación de todos los routers/arquitecturas.</p>
+<p><code>python3</code> también debe estar en el PATH de la sesión SSH: el conector lo utiliza para iniciar el intérprete elegido. No hace falta activar el venv en cada sesión, instalar Django en Raspberry ni crear servicio SpicyOps.</p>
+<p>Si ya existe entorno funcional, verificarlo y reutilizar su ruta. Registrar versiones reales; disponibilidad de paquetes no acredita prueba física ARMv6.</p>
+<p>Fuentes: <a href="https://pypi.org/project/librouteros/4.2.2/">librouteros 4.2.2</a>, <a href="https://librouteros.readthedocs.io/en/latest/connect.html">conexión</a>. Conserva la verificación TLS, incluso si otros ejemplos de la biblioteca la desactivan.</p>
+<label class="check"><input type="checkbox" data-step="raspberry-python"> Ya lo comprobé <small>Declaración personal; la web no prueba equipos.</small></label></details>
+<details id="mikrotik-inventario" class="chapter preparation" data-title="5. Inspeccionar MikroTik"><summary aria-label="5. Inspeccionar MikroTik"><header class="chapter-header"><span class="eyebrow">ETAPA 05 / 10</span><h2>5. Inspeccionar MikroTik</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>MikroTik · RouterOS</p><p><strong>Qué necesitas</strong>Sesión administrativa confiable</p><p><strong>Qué debes ver</strong>Estado previo de API, colas y certificados.</p></div><p><strong>MikroTik · WinBox → New Terminal o consola administrativa confiable.</strong> No pegar RouterOS en PowerShell o Bash.</p>
+<figure class="command" data-command="12" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/system resource print
+/system clock print
+/ip address print
+/ip service print detail where name=api-ssl
+/certificate print detail
+/user group print
+/ip firewall filter print detail where chain=input
+/ip firewall raw print
+/queue simple print count-only</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Consultar localmente, sin pedir subir las salidas. Registrar estado previo de servicio, certificado y reglas. Guardar respaldo privado mediante los procedimientos administrativos existentes y tener vía de recuperación antes de cambios remotos.</p>
+<p>Elige según el estado de tu localidad:</p>
+<ol>
+<li><strong>API-SSL y CA ya preparadas:</strong> verificar IP/SAN, vigencia y acceso; reutilizar y saltar creación.</li>
+<li><strong>Preparación nueva:</strong> seguir los pasos de certificados, usuario y servicio.</li>
+<li><strong>Servicio compartido:</strong> revisar consumidores antes de reemplazar certificado, puerto u orígenes.</li>
+</ol>
+<p>La sintaxis tradicional se usa habitualmente en RouterOS 6/7; esta guía no acredita compatibilidad física universal ni una versión probada del equipo. Si un equipo antiguo rechaza propiedades o TLS, documentar el bloqueo sin degradar a API sin cifrar.</p>
+<label class="check"><input type="checkbox" data-step="mikrotik-inventario"> Ya lo comprobé <small>Declaración personal; la web no prueba equipos.</small></label></details>
+<details id="mikrotik-certificados" class="chapter preparation" data-title="6. Crear CA y certificado de servidor"><summary aria-label="6. Crear CA y certificado de servidor"><header class="chapter-header"><span class="eyebrow">ETAPA 06 / 10</span><h2>6. Crear CA y certificado de servidor</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>MikroTik · RouterOS</p><p><strong>Qué necesitas</strong>Preparación nueva; revisa nombres existentes</p><p><strong>Qué debes ver</strong>CA pública y servidor con SAN de IP válido.</p></div><p><strong>Modifica MikroTik; solo preparación nueva.</strong> Comprobar que los nombres no existan. Ejecutar por bloques y esperar que termine cada firma.</p>
+<p>Crear CA:</p>
+<figure class="command" data-command="13" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/certificate add name=spicyops-ca-template common-name=SpicyOps-Local-CA key-size=2048 days-valid=1825 key-usage=key-cert-sign,crl-sign
+/certificate sign spicyops-ca-template name=spicyops-ca
+/certificate set [find where name=&quot;spicyops-ca&quot;] trusted=yes</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Crear certificado para la IP <strong>real</strong> del MikroTik:</p>
+<figure class="command" data-command="14" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/certificate add name=spicyops-api-template common-name=SpicyOps-API subject-alt-name=IP:192.168.88.1 key-size=2048 days-valid=365 key-usage=digital-signature,key-encipherment,tls-server
+/certificate sign spicyops-api-template ca=spicyops-ca name=spicyops-api
+/certificate print detail where name=spicyops-api</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Comprobar firma, clave privada del servidor, vigencia y SAN. Common-name no sustituye SAN de IP. Cambiar la IP utilizada por el programa puede requerir otro certificado válido.</p>
+<p>Exportar <strong>solo la CA pública</strong>:</p>
+<figure class="command" data-command="15" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/certificate export-certificate spicyops-ca type=pem file-name=spicyops-ca
+/file print where name~&quot;spicyops-ca&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>No añadir <code>export-passphrase</code> ni exportar claves privadas. Descargar <code>spicyops-ca.crt</code> de Files de WinBox por sesión confiable. La clave privada de CA y la del servidor permanecen bajo control del administrador del router.</p>
+<p>No confiar en archivos de origen no verificado. Registrar emisor, huella y vencimiento; incluir recordatorio de renovación.</p>
+<p>Fuentes: <a href="https://manual.mikrotik.com/docs/authentication-authorization-accounting/certificates/">certificados/SAN</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/2555969/Certificates">exportación PEM</a>.</p>
+<label class="check"><input type="checkbox" data-step="mikrotik-certificados"> Ya lo comprobé <small>Declaración personal; la web no prueba equipos.</small></label></details>
+<details id="mikrotik-api" class="chapter preparation" data-title="7. Usuario API, modo elegido y servicio cifrado"><summary aria-label="7. Usuario API, modo elegido y servicio cifrado"><header class="chapter-header"><span class="eyebrow">ETAPA 07 / 10</span><h2>7. Usuario API, modo elegido y servicio cifrado</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>MikroTik · RouterOS</p><p><strong>Qué necesitas</strong>CA/servidor preparados; elige permisos</p><p><strong>Qué debes ver</strong>API-SSL 8729, origen LAN y grupo correcto.</p></div><p>Elige <strong>Consultar datos</strong> (read,api) o <strong>Consultar y controlar clientes</strong> (read,write,api). El control exige permisos de escritura y una política Morosos revisada.</p>
+<div class="permission-read"><h3>Solo consulta</h3>
+<p>Crear grupo nuevo dedicado:</p>
+<figure class="command" data-command="16" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/user group add name=spicyops-read policy=read,api
+/user add name=spicyops-agent group=spicyops-read address=192.168.88.90/32 disabled=yes comment=&quot;SpicyOps API desde Raspberry&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure></div><div class="permission-control"><h3>Consulta y control de Morosos</h3>
+<p>Para una instalación nueva, en lugar del bloque anterior:</p>
+<figure class="command" data-command="17" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/user group add name=spicyops-control policy=read,write,api
+/user add name=spicyops-agent group=spicyops-control address=192.168.88.90/32 disabled=yes comment=&quot;SpicyOps API desde Raspberry&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Ejecuta solamente el bloque de tu modo sobre la cuenta dedicada. Si nombre/grupo ya existe, utilizar el recorrido de <a href="#modo-escritura">escritura sin reinstalar</a> y revisar antes de editar. El grupo predeterminado read no es equivalente al grupo mínimo propio: incluye permisos adicionales.</p>
+</div><h3>Contraseña y activación</h3>
+<p>La cuenta se crea deshabilitada para no dejar acceso sin contraseña. Ruta principal: <strong>WinBox → System → Users → spicyops-agent</strong>, establecer una contraseña única en Password/Confirm Password y habilitar tras guardarla. No cambiar otras cuentas. La página nunca pide ni genera esa contraseña.</p>
+<p>Esta plantilla se edita únicamente fuera del sitio, respetando escapes RouterOS. Copiar permanece deshabilitado por contener una contraseña pendiente:</p>
+<figure class="command" data-command="18" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/user set [find where name=&quot;spicyops-agent&quot;] password=&quot;&lt;CLAVE_UNICA_LOCAL&gt;&quot;
+/user enable [find where name=&quot;spicyops-agent&quot;]</code></pre><div class="copy-row"><small>Plantilla: resuelve los marcadores fuera de la web.</small><button type="button" class="copy" disabled>Copiar</button></div></figure><p>No habilitar si falló la asignación. Resuelve ese marcador únicamente en tu equipo, nunca en esta guía. Utiliza una contraseña única y mantenla fuera de esta web.</p>
+<p>Comprobar usuario y el grupo del modo elegido:</p>
+<figure class="command" data-command="19" data-language="routeros" data-action="Consulta"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/user print detail where name=&quot;spicyops-agent&quot;
+/user group print detail where name~&quot;^spicyops-(read|control)$&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Revisar el grupo asignado a la cuenta. Deben estar positivos read y api; para control también write. Otras políticas no deben concederse por comodidad. No dar full, sensitive, policy, reboot o SSH al MikroTik para esta integración.</p>
+<p>El origen es la IP LAN que el router ve para Raspberry, no la IP Tailscale de Windows. Revisar NAT intermedio si existe. Write es una capacidad amplia de RouterOS: no limita por sí mismo las operaciones a Morosos ni a un abonado. El programa aplica su propio contrato de acciones permitidas.</p>
+<h3>Asignar certificado y habilitar API-SSL</h3>
+<p>Tras preparar el certificado y revisar consumidores existentes:</p>
+<figure class="command" data-command="20" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/ip service set [find where name=&quot;api-ssl&quot;] disabled=no port=8729 certificate=spicyops-api address=192.168.88.90/32 tls-version=only-1.2</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p><code>address=</code> reemplaza la lista de orígenes del servicio. En un servicio compartido conservar los otros orígenes autorizados según su política; no imponer el ejemplo sobre una instalación con consumidores adicionales. Reemplazar certificado/puerto también puede afectarles.</p>
+<p>En preparación nueva o tras confirmar que no existen dependencias de API sin TLS, cerrar 8728:</p>
+<figure class="command" data-command="21" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/ip service disable [find where name=&quot;api&quot;]
+/ip service print detail where name~&quot;^api&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>API-SSL debe estar habilitada sin X/I, con certificado, TLS 1.2 y orígenes correctos. API sin TLS debe quedar deshabilitada; no tocar WinBox/SSH u otros servicios como efecto lateral. No abrir ni redirigir puertos desde Starlink/internet.</p>
+<p>Fuentes: <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User">usuarios/políticas</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/103841820/Services">servicios</a>, <a href="https://manual.mikrotik.com/docs/developer-guides/api/">API</a>.</p>
+<label class="check"><input type="checkbox" data-step="mikrotik-api"> Ya lo comprobé <small>Declaración personal; la web no prueba equipos.</small></label></details>
+<details id="mikrotik-firewall" class="chapter preparation" data-title="8. Firewall"><summary aria-label="8. Firewall"><header class="chapter-header"><span class="eyebrow">ETAPA 08 / 10</span><h2>8. Firewall</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>MikroTik · RouterOS</p><p><strong>Qué necesitas</strong>Revisar input y raw sin reemplazar reglas</p><p><strong>Qué debes ver</strong>Solo Raspberry llega al puerto necesario.</p></div><p>La restricción del servicio no sustituye al firewall. El destino es el propio router: corresponde a <strong>input</strong>, no forward.</p>
+<p>Si la política actual bloquea el flujo, añadir una aceptación limitada a Raspberry LAN y TCP 8729 <strong>antes del descarte pertinente</strong>. Plantilla:</p>
+<figure class="command" data-command="22" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/ip firewall filter add chain=input action=accept protocol=tcp src-address=192.168.88.90/32 dst-address=192.168.88.1 dst-port=8729 place-before=&lt;ID_REGLA_INPUT_QUE_BLOQUEA&gt; comment=&quot;SpicyOps API-SSL desde Raspberry&quot;</code></pre><div class="copy-row"><small>Plantilla: resuelve los marcadores fuera de la web.</small><button type="button" class="copy" disabled>Copiar</button></div></figure><p>El administrador obtiene el ID de la configuración vigente; el configurador no lo adivina. Alternativa: crear en IP → Firewall → Filter Rules y ubicar antes del descarte adecuado. Si la política ya permite ese flujo, no añadir una regla por costumbre.</p>
+<p>No vaciar reglas, cambiar políticas globales, insertar indiscriminadamente en posición cero, permitir cualquier origen, crear NAT hacia internet o alterar FastTrack. Revisar raw si descarta antes del filtro. No presentar esta excepción como auditoría del firewall completo.</p>
+<figure class="command" data-command="23" data-language="routeros" data-action="Consulta"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/ip firewall filter print stats where comment=&quot;SpicyOps API-SSL desde Raspberry&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Ese contador no acredita login API. La conexión TLS se comprueba desde Raspberry en el paso siguiente.</p>
+<p>Fuente: <a href="https://manual.mikrotik.com/docs/getting-started/securing-your-router/">seguridad del router y orden de reglas</a>.</p>
+<label class="check"><input type="checkbox" data-step="mikrotik-firewall"> Ya lo comprobé <small>Declaración personal; la web no prueba equipos.</small></label></details>
+<details id="validar-tls" class="chapter preparation" data-title="9. Transferir CA y validar TLS"><summary aria-label="9. Transferir CA y validar TLS"><header class="chapter-header"><span class="eyebrow">ETAPA 09 / 10</span><h2>9. Transferir CA y validar TLS</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Windows y Raspberry</p><p><strong>Qué necesitas</strong>CA obtenida por canal confiable</p><p><strong>Qué debes ver</strong>Cadena e identidad IP verificadas; aún sin login API.</p></div><p><strong>Raspberry · Bash:</strong></p>
+<figure class="command" data-command="24" data-language="bash" data-action="Configuración"><figcaption><span>Raspberry · Bash</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>mkdir -p &quot;$HOME/spicyops-certs&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p><strong>Windows · PowerShell</strong>, desde la carpeta donde se descargó la CA por WinBox:</p>
+<figure class="command" data-command="25" data-language="powershell" data-action="Configuración"><figcaption><span>Windows · PowerShell</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>Get-FileHash -Algorithm SHA256 .\spicyops-ca.crt
+scp -P 22 .\spicyops-ca.crt operador@100.70.10.1:/home/operador/spicyops-certs/spicyops-ca.crt</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p><strong>Raspberry · Bash:</strong></p>
+<figure class="command" data-command="26" data-language="bash" data-action="Consulta"><figcaption><span>Raspberry · Bash</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>sha256sum &quot;$HOME/spicyops-certs/spicyops-ca.crt&quot;
+openssl x509 -in &quot;$HOME/spicyops-certs/spicyops-ca.crt&quot; -noout -subject -issuer -dates -fingerprint -sha256
+ip route get 192.168.88.1
+openssl s_client -connect 192.168.88.1:8729 -CAfile &quot;$HOME/spicyops-certs/spicyops-ca.crt&quot; -verify_ip 192.168.88.1 -verify_return_error &lt; /dev/null</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Comparar hashes en ambos equipos: verifica la copia, no sustituye la confianza del canal de obtención de CA. Revisar la dirección de origen LAN de la ruta.</p>
+<p>Resultado esperado: cadena válida e IP verificada, normalmente <code>Verify return code: 0 (ok)</code>. Aún no se ha probado login API. Si falla, corregir CA, SAN, vigencia, reloj, certificado asignado o acceso de red.</p>
+<p>Esta comprobación manual es opcional: si SpicyOps ya conecta y lee, no necesitas repetir TLS por terminal. El lector valida la CA y la identidad del router.</p>
+<p>Fuente: <a href="https://docs.python.org/3.11/library/ssl.html">SSL de Python</a>. Mantener el criterio del lector: nunca <code>CERT_NONE</code>, desactivar <code>check_hostname</code> o ignorar el certificado.</p>
+<label class="check"><input type="checkbox" data-step="validar-tls"> Ya lo comprobé <small>Declaración personal; la web no prueba equipos.</small></label></details>
+<details id="lecturas-api" class="chapter preparation" data-title="Diagnóstico API manual · opcional"><summary aria-label="Diagnóstico API manual · opcional"><header class="chapter-header"><span class="eyebrow">CUADERNO DE CAMPO</span><h2>Diagnóstico API manual · opcional</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Raspberry · Python / SpicyOps</p><p><strong>Qué necesitas</strong>TLS válido y cuenta API</p><p><strong>Qué debes ver</strong>Login y cantidades; no acredita escritura ni corte.</p></div><p>La comprobación preferente es <strong>Diagnosticar en SpicyOps</strong>, tras completar el perfil del perfil. Como opción avanzada, descarga el script desde Recursos y guárdalo <strong>localmente en Raspberry</strong> como <code>~/spicyops-check-api.py</code>.</p>
+<p>La receta descargable exige una terminal interactiva para pedir la clave sin mostrarla. No muestra inventario ni guarda secretos.</p>
+<figure class="command" data-command="27" data-language="python" data-action="Consulta"><figcaption><span>Raspberry · Python</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>from functools import partial
+from getpass import getpass
+from pathlib import Path
+import ssl
+import sys
+from librouteros import connect
+
+if not sys.stdin.isatty():
+    raise SystemExit(&quot;Ejecuta este archivo desde una terminal interactiva.&quot;)
+
+ip = &quot;192.168.88.1&quot;
+ctx = ssl.create_default_context(
+    cafile=str(Path.home() / &quot;spicyops-certs&quot; / &quot;spicyops-ca.crt&quot;)
+)
+ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+api = connect(
+    host=ip,
+    port=8729,
+    username=&quot;spicyops-agent&quot;,
+    password=getpass(&quot;Contraseña API (no se muestra): &quot;),
+    ssl_wrapper=partial(ctx.wrap_socket, server_hostname=ip),
+    timeout=8,
+)
+try:
+    for path, properties in [
+        (&quot;/system/identity/print&quot;, &quot;name&quot;),
+        (&quot;/system/resource/print&quot;, &quot;uptime,version,board-name&quot;),
+        (&quot;/queue/simple/print&quot;, &quot;.id,name,target,bytes&quot;),
+        (&quot;/ip/firewall/address-list/print&quot;, &quot;.id,list,address,disabled&quot;),
+    ]:
+        count = sum(1 for _ in api(path, **{&quot;.proplist&quot;: properties}))
+        print(path, &quot;OK; registros:&quot;, count)
+finally:
+    api.close()</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Ejecutar desde terminal interactiva de Raspberry:</p>
+<figure class="command" data-command="28" data-language="bash" data-action="Consulta"><figcaption><span>Raspberry · Bash</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>&quot;$HOME/spicyops-venv/bin/python&quot; &quot;$HOME/spicyops-check-api.py&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Solo consulta e imprime cantidades. La última ruta cuenta todas las entradas de address-list, no únicamente Morosos. No confundirlo con cantidad de clientes suspendidos.</p>
+<p>Cero colas o Morosos vacío puede ser válido. No crear colas/clientes de prueba en producción para llenar pantallas. Una revisión de código no acredita prueba física.</p>
+</details>
+<section id="completar-spicyops" class="chapter" data-title="Completar el perfil en SpicyOps"><header class="chapter-header"><span class="eyebrow">ETAPA 10 / 10</span><h2>Completar el perfil en SpicyOps</h2></header><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Windows · SpicyOps</p><p><strong>Qué necesitas</strong>Accesos y rutas de Raspberry</p><p><strong>Qué debes ver</strong>Huella confirmada, lecturas y fechas reales.</p></div><p>Extraer el paquete Windows completo, conservando <code>_internal</code> junto a <code>SpicyOps.exe</code>. Abrir <strong>Conexiones → Nueva localidad</strong>.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Tabla de referencia"><table>
+<thead>
+<tr>
+<th>Campo real</th>
+<th>Qué introducir</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nombre de la localidad</td>
+<td>Nombre elegido por el operador</td>
+</tr>
+<tr>
+<td>Dirección de la Raspberry</td>
+<td><code>100.70.10.1</code> o nombre Tailscale autorizado</td>
+</tr>
+<tr>
+<td>Puerto SSH</td>
+<td><code>22</code>, salvo configuración distinta</td>
+</tr>
+<tr>
+<td>Usuario de Raspberry</td>
+<td><code>operador</code> o cuenta existente</td>
+</tr>
+<tr>
+<td>Autenticación SSH</td>
+<td>Contraseña o Clave SSH de Windows</td>
+</tr>
+<tr>
+<td>Contraseña o frase de clave</td>
+<td>Solo en SpicyOps</td>
+</tr>
+<tr>
+<td>Archivo de clave privada en Windows</td>
+<td>Ruta local si se usa; no la clave de host de Raspberry</td>
+</tr>
+<tr>
+<td>IP del MikroTik</td>
+<td><code>192.168.88.1</code>; explícita para evitar otra puerta de enlace</td>
+</tr>
+<tr>
+<td>Usuario API del MikroTik</td>
+<td><code>spicyops-agent</code></td>
+</tr>
+<tr>
+<td>Contraseña API del MikroTik</td>
+<td>Solo en SpicyOps</td>
+</tr>
+<tr>
+<td>Certificado CA en Raspberry</td>
+<td><code>/home/operador/spicyops-certs/spicyops-ca.crt</code></td>
+</tr>
+<tr>
+<td>Python con librouteros en Raspberry</td>
+<td><code>/home/operador/spicyops-venv/bin/python</code></td>
+</tr>
+</tbody></table>
+</div><p>Las rutas CA/Python son de Raspberry; la clave privada SSH es de Windows. Completar el campo CA no transfiere archivos.</p>
+<p>Comparar y confirmar huella SSH desde fuente confiable. Conectar y revisar resultado. Diagnosticar separa acceso, identidad SSH, autenticación, lector, TLS y API; no actualiza Clientes/Analytics ni modifica la red.</p>
+<p>Sincronizar y revisar colas individuales en Clientes y fecha en Analytics. Las diferencias observadas necesitan intervalos válidos. Las aproximaciones por uptime no son consumo mensual medido.</p>
+<p>La actualización automática es opcional y empieza desactivada. Requiere SpicyOps ejecutándose en Windows; una PC apagada no lee. No describirla como servicio instalado en Raspberry.</p>
+<label class="check"><input type="checkbox" data-step="completar-spicyops"> Ya lo comprobé <small>Declaración personal; la web no prueba equipos.</small></label></section>
+<details id="modo-escritura" class="chapter preparation" data-title="Control de Morosos y localidad ya preparada"><summary aria-label="Control de Morosos y localidad ya preparada"><header class="chapter-header"><span class="eyebrow">CUADERNO DE CAMPO</span><h2>Control de Morosos y localidad ya preparada</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>MikroTik y SpicyOps</p><p><strong>Qué necesitas</strong>Cuenta dedicada y política Morosos revisada</p><p><strong>Qué debes ver</strong>Permisos y estado leído; efecto físico por verificar.</p></div><p>La escritura no es requisito para leer. Actívala únicamente para el control de Morosos con permisos y política revisados.</p>
+<h3>Activar escritura sin repetir la instalación</h3>
+<p>Primero consultar la cuenta y su grupo actual:</p>
+<figure class="command" data-command="29" data-language="routeros" data-action="Consulta"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/user print detail where name=&quot;spicyops-agent&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Si la cuenta dedicada ya utiliza el grupo spicyops-read de la preparación anterior:</p>
+<figure class="command" data-command="30" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/user group set [find where name=&quot;spicyops-read&quot;] policy=read,write,api
+/user group print detail where name=&quot;spicyops-read&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Si utiliza spicyops-control, consultar/modificar ese grupo real. No aplicar a un grupo compartido con otros usuarios sin revisar su alcance; preparar uno dedicado si corresponde. El nombre de un grupo no determina sus permisos: comprobar write positivo.</p>
+<p>Para retirar escritura en el grupo histórico:</p>
+<figure class="command" data-command="31" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/user group set [find where name=&quot;spicyops-read&quot;] policy=read,api,!write
+/user group print detail where name=&quot;spicyops-read&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Comprobar !write, no dar por completada la retirada solo porque el comando no reportó error. No repetir emisión de CA, cambiar contraseñas o instalar otro Python si ya están preparados.</p>
+<h3>Política que debe existir en el router</h3>
+<figure class="command" data-command="32" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/ip firewall address-list print detail where list=&quot;Morosos&quot;
+/ip firewall filter print detail where chain=forward</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Las reglas deben usar la lista exacta Morosos y controlar el recorrido real del abonado. SpicyOps no las instala. Write permite operaciones mucho más amplias que el programa: la aplicación solo agrega/habilita/deshabilita una entrada IPv4 individual validada y exige confirmación de cliente, IP y localidad. No cambia planes ni corta por fecha. Si la escritura o su confirmación son inciertas, sincronizar antes de reintentar.</p>
+<p>Input controla el tráfico dirigido al propio router (API-SSL); forward controla el tráfico que atraviesa el router (abonados). FastTrack, IPv6 y sesiones existentes requieren revisión independiente: el estado de la lista no acredita corte físico.</p>
+<p>Plantilla avanzada <strong>deshabilitada</strong>: requiere resolver interfaz e ID de posición fuera de la web. No es una receta universal:</p>
+<figure class="command" data-command="33" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/ip firewall filter add chain=forward action=drop src-address-list=Morosos out-interface=&lt;INTERFAZ_WAN_REAL&gt; disabled=yes place-before=&lt;ID_REGLA_FORWARD_A_REVISAR&gt; comment=&quot;SpicyOps politica Morosos pendiente de revision&quot;</code></pre><div class="copy-row"><small>Plantilla: resuelve los marcadores fuera de la web.</small><button type="button" class="copy" disabled>Copiar</button></div></figure><p>Alternativa GUI: crear regla deshabilitada en IP → Firewall → Filter Rules y ubicarla según la política revisada. La activación se hace en una ventana operativa, comprobando previamente qué IP ya están activas en Morosos. No dar un comando genérico que habilite la regla y afecte a abonados por copiar toda la página.</p>
+<p>No modificar FastTrack globalmente, vaciar connection tracking o inventar reglas IPv6 para una topología desconocida. Si hay esos caminos, explicar que falta su tratamiento antes de acreditar suspensión efectiva. No instalar portal ni redirecciones como condición del control.</p>
+<h3>Verificaciones y significado del resultado</h3>
+<ul>
+<li>Grupo/cuenta habilitados acreditan configuración de permisos; no una escritura efectuada.</li>
+<li>Diagnosticar y sincronizar acreditan solo las lecturas implementadas.</li>
+<li>Estado posterior de Morosos acredita configuración leída; no garantiza ausencia de internet por todos los caminos.</li>
+<li>La prueba física de corte/reactivación requiere un destino controlado y observación desde el abonado, en otro procedimiento. El sitio educativo no la ejecuta.</li>
+</ul>
+<p>Fuentes: <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User">usuarios</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/48660574/Filter">firewall</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/130220087/Connection%2Btracking">FastTrack</a>.</p>
+</details>
+<details id="errores" class="chapter preparation" data-title="Solución de errores"><summary aria-label="Solución de errores"><header class="chapter-header"><span class="eyebrow">CUADERNO DE CAMPO</span><h2>Solución de errores</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Consulta de referencia</p><p><strong>Qué necesitas</strong>Preparación de la localidad</p><p><strong>Qué debes ver</strong>Revisa los límites de cada comprobación.</p></div><div class="table-scroll" tabindex="0" role="region" aria-label="Tabla de referencia"><table>
+<thead>
+<tr>
+<th>Síntoma</th>
+<th>Revisar</th>
+<th>Evitar</th>
+</tr>
+</thead>
+<tbody><tr><td><a href="#tailscale-raspberry">Tailscale no instala</a></td>
+<td>SO, arquitectura y paquetes oficiales</td>
+<td>Binarios ARM al azar</td>
+</tr>
+<tr><td><a href="#tailscale-raspberry">Raspberry no aparece</a></td>
+<td>Login, aprobación, tailscaled</td>
+<td>Abrir SSH en WAN</td>
+</tr>
+<tr><td><a href="#raspberry-ssh">VPN responde, TCP 22 no</a></td>
+<td>Grant, OpenSSH, puerto, firewall Linux</td>
+<td>Confundir ping con SSH</td>
+</tr>
+<tr><td><a href="#raspberry-ssh">Autenticación SSH falla</a></td>
+<td>Cuenta Linux o clave autorizada</td>
+<td>Usar contraseña API</td>
+</tr>
+<tr><td><a href="#raspberry-ssh">Huella cambió</a></td>
+<td>Identidad por canal confiable</td>
+<td>Aceptar/borrar automáticamente</td>
+</tr>
+<tr><td><a href="#raspberry-python">Python no inicia</a></td>
+<td>python3 en PATH y ruta del venv</td>
+<td>Python Windows</td>
+</tr>
+<tr><td><a href="#raspberry-python">Falta librouteros</a></td>
+<td>Importar con el ejecutable configurado</td>
+<td>Instalar en otro entorno</td>
+</tr>
+<tr><td><a href="#validar-tls">CA no encontrada</a></td>
+<td>Archivo legible y ruta Raspberry</td>
+<td>Ruta Windows</td>
+</tr>
+<tr><td><a href="#mikrotik-firewall">API timeout/refused</a></td>
+<td>IP LAN, 8729, origen y firewall</td>
+<td>API sin TLS</td>
+</tr>
+<tr><td><a href="#validar-tls">CA no confiable</a></td>
+<td>Cadena y CA correctas</td>
+<td>Desactivar validación</td>
+</tr>
+<tr><td><a href="#mikrotik-certificados">IP mismatch</a></td>
+<td>SAN IP igual al destino</td>
+<td>Cambiar solo common-name</td>
+</tr>
+<tr><td><a href="#mikrotik-certificados">Certificado vencido</a></td>
+<td>Vigencia y relojes</td>
+<td>Ignorar el error</td>
+</tr>
+<tr><td><a href="#mikrotik-api">Login API rechazado</a></td>
+<td>Usuario, clave, grupo y origen</td>
+<td>Permisos full</td>
+</tr>
+<tr><td><a href="#completar-spicyops">Conecta, cero clientes</a></td>
+<td>Colas individuales y exclusiones</td>
+<td>Inventar clientes</td>
+</tr>
+<tr><td><a href="#completar-spicyops">Sin gráfica histórica</a></td>
+<td>Lecturas válidas, intervalos y resets</td>
+<td>Inventar continuidad</td>
+</tr>
+<tr><td><a href="#modo-escritura">Morosos rechaza</a></td>
+<td>Cuenta de lectura o caso ambiguo</td>
+<td>Reintentar sin sincronizar</td>
+</tr>
+<tr><td><a href="#mikrotik-api">Antes funcionaba</a></td>
+<td>IP LAN de Raspberry cambió</td>
+<td>Ampliar acceso a toda la red</td>
+</tr>
+</tbody></table>
+</div><p>Utiliza el índice para volver a la etapa correspondiente. Puedes imprimir la guía completa con el resumen de campos del resumen del perfil.</p>
+</details>
+<details id="mantenimiento" class="chapter preparation" data-title="Mantenimiento y localidades"><summary aria-label="Mantenimiento y localidades"><header class="chapter-header"><span class="eyebrow">CUADERNO DE CAMPO</span><h2>Mantenimiento y localidades</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Consulta de referencia</p><p><strong>Qué necesitas</strong>Preparación de la localidad</p><p><strong>Qué debes ver</strong>Revisa los límites de cada comprobación.</p></div><p>Cada Raspberry necesita acceso Tailscale, intérprete/CA y perfil propio. Cada router requiere preparación acorde a su localidad. No anunciar subredes de clientes para esta arquitectura.</p>
+<p>Recordar vigencia de certificados, reautenticación Tailscale según política, IP LAN estable y respaldo portable cifrado de SpicyOps. No desactivar expiración ni controles automáticamente. La web no accede a la tailnet ni al estado privado de la aplicación.</p>
+</details>
+<details id="administracion-avanzada" class="chapter preparation" data-title="Administración avanzada"><summary aria-label="Administración avanzada"><header class="chapter-header"><span class="eyebrow">CUADERNO DE CAMPO</span><h2>Administración avanzada</h2></header></summary><div class="stage-summary"><p><strong>Dónde ejecutar</strong>Consulta de referencia</p><p><strong>Qué necesitas</strong>Preparación de la localidad</p><p><strong>Qué debes ver</strong>Revisa los límites de cada comprobación.</p></div><h3>A. Acceso directo opcional a la LAN mediante Tailscale</h3>
+<p>Anexo opcional de administración avanzada. El uso de SpicyOps no requiere forwarding ni anunciar subredes: Windows conecta a Raspberry, no directamente a la IP LAN del MikroTik.</p>
+<p>Si el administrador necesita además WinBox o acceso directo a antenas desde Windows, explicar el subnet router. Para una Raspberry y rango ficticio de esta guía:</p>
+<figure class="command" data-command="34" data-language="bash" data-action="Configuración"><figcaption><span>Raspberry · Bash</span><span class="kind">Configuración</span></figcaption><div class="command-meta">sudo en los comandos indicados · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>printf 'net.ipv4.ip_forward = 1\nnet.ipv6.conf.all.forwarding = 1\n' | sudo tee /etc/sysctl.d/99-spicyops-tailscale.conf
+sudo sysctl -p /etc/sysctl.d/99-spicyops-tailscale.conf
+sudo tailscale set --advertise-routes=192.168.88.0/24</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Es una configuración adicional que modifica forwarding. Revisar firewall del dispositivo, autorizar rutas y acceso en la consola Tailscale. <code>--advertise-routes</code> establece la lista anunciada: conservar las rutas previas necesarias en el valor completo. No reemplazarla ciegamente. No habilitar exit node, Funnel ni rutas predeterminadas para este objetivo.</p>
+<p><code>tailscale up --advertise-routes=...</code> combina inicio y anuncio en una instalación nueva. Para una Raspberry autenticada, la guía usa <code>tailscale set</code> para esa preferencia. Si ya funciona el acceso de mantenimiento, no repetir la preparación ni resetear Tailscale.</p>
+<p>Windows suele recoger las rutas aprobadas. Las LAN idénticas de distintas localidades hacen ambiguo el acceso directo por IP; tratarlas mediante diseño específico. Los perfiles de SpicyOps continúan apuntando a cada Raspberry y no necesitan cambiar de subred o de tailnet al seleccionar localidad.</p>
+<p>Fuente: <a href="https://tailscale.com/docs/features/subnet-routers">subnet routers de Tailscale</a>.</p>
+<h3>B. Exportar configuración y respaldar antes de cambiar</h3>
+<p>Conserva configuraciones, respaldos y salidas del router únicamente en almacenamiento privado.</p>
+<p><strong>MikroTik · Terminal administrativa:</strong></p>
+<figure class="command" data-command="35" data-language="routeros" data-action="Configuración"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Configuración</span></figcaption><div class="command-meta">Administrador autorizado · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/export file=antes-spicyops
+/file print where name~&quot;antes-spicyops&quot;</code></pre><div class="copy-row"><small>Ejemplo ficticio · revisa los valores antes de copiar.</small><button type="button" class="copy" >Copiar</button></div></figure><p>Descargar <code>.rsc</code> desde WinBox → Files. La exportación normal oculta campos sensibles reconocidos, pero un secreto escrito literalmente en un script/comentario puede permanecer. Tratar el archivo como privado, revisarlo antes de compartirlo y no incluirlo en los recursos descargables de la web.</p>
+<p>Para respaldo binario de recuperación, ruta principal por GUI con contraseña de respaldo elegida localmente; también se puede mostrar esta plantilla con Copiar bloqueado:</p>
+<figure class="command" data-command="36" data-language="routeros" data-action="Consulta"><figcaption><span>MikroTik · RouterOS</span><span class="kind">Consulta</span></figcaption><div class="command-meta">Cuenta autorizada · Revisa los prerrequisitos y el resultado de esta etapa.</div><pre tabindex="0"><code>/system backup save name=antes-spicyops password=&quot;&lt;CLAVE_RESPALDO_LOCAL&gt;&quot;</code></pre><div class="copy-row"><small>Plantilla: resuelve los marcadores fuera de la web.</small><button type="button" class="copy" disabled>Copiar</button></div></figure><p>Introduce la contraseña solo en WinBox o en tu terminal local. Guardar el backup fuera del router, en almacenamiento privado. La guía no restaura backups ni importa exports para configurar otro router. No confundir respaldo binario con inventario saneado o con un instalador.</p>
+<p>Fuentes: <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/328155/Configuration%2BManagement">configuración y exports</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/40992852/Backup">backup</a>.</p>
+<h3>C. Resumen de lo que debe quedar preparado</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Tabla de referencia"><table>
+<thead>
+<tr>
+<th>Capa</th>
+<th>Lectura</th>
+<th>Consulta y control</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Windows → Raspberry</td>
+<td>Tailscale/LAN, OpenSSH, identidad verificada</td>
+<td>Igual</td>
+</tr>
+<tr>
+<td>Raspberry</td>
+<td>python3 en PATH, entorno con librouteros, CA legible</td>
+<td>Igual; no necesita un servicio permanente SpicyOps</td>
+</tr>
+<tr>
+<td>MikroTik</td>
+<td>API-SSL 8729, certificado con SAN IPv4 correcto, origen permitido</td>
+<td>Igual</td>
+</tr>
+<tr>
+<td>Cuenta API</td>
+<td>read,api</td>
+<td>read,write,api, con alcance amplio de write explicado</td>
+</tr>
+<tr>
+<td>Reglas de clientes</td>
+<td>No necesarias para consultar colas</td>
+<td>Morosos debe tener política previamente revisada para el sitio</td>
+</tr>
+<tr>
+<td>Formulario</td>
+<td>Accesos y rutas reales, introducidos solo en SpicyOps</td>
+<td>Igual; la acción exige confirmación del operador</td>
+</tr>
+<tr>
+<td>Evidencia</td>
+<td>TLS, login y lecturas</td>
+<td>Lo anterior más permisos; el efecto físico de una suspensión se verifica aparte</td>
+</tr>
+</tbody></table>
+</div></details></div><section id="glosario" class="chapter"><span class="eyebrow">PARA TENER A MANO</span><h2>Glosario y recursos</h2><dl><dt>Tailnet</dt><dd>Red privada de dispositivos autorizados en Tailscale.</dd><dt>SSH / huella</dt><dd>Acceso remoto cifrado / identidad criptográfica del equipo.</dd><dt>CA y SAN</dt><dd>Autoridad que firma certificados y campo que identifica la IPv4 del router.</dd><dt>Input / forward</dt><dd>Tráfico al propio router / tráfico de abonados que lo atraviesa.</dd><dt>Morosos</dt><dd>Lista fija de direcciones; su efecto depende del firewall.</dd><dt>Uptime</dt><dd>Tiempo encendido del router; no confirma la edad del contador.</dd></dl><div class="downloads"><a href="%BASE_URL%downloads/guia-spicyops.md" download>↓ Guía completa (.md)</a><a id="download-python" href="%BASE_URL%downloads/spicyops-check-api.py" download>↓ Comprobación API (.py)</a></div><p>La descarga no ejecuta el script. Revisa su contenido y ejecútalo solo en una terminal interactiva de Raspberry. No hay un instalador de SpicyOps publicado desde esta guía.</p></section><footer>SPICYOPS / GUÍA DE CAMPO <span>Revisión 25.10.2026 · v1.1</span><p>Ejemplos ficticios. Recetas educativas; pruebas físicas de Raspberry, MikroTik y suspensión pendientes.</p></footer></main><aside class="rail"><span class="eyebrow">ANTES DE CONECTAR</span><h3>Los accesos van<br>en SpicyOps.</h3><p>Ten a mano tu cuenta SSH, el usuario API y las rutas de Python y CA en Raspberry.</p><div class="rail-line"></div><h3>Dos conexiones.<br>Dos identidades.</h3><p>SSH verifica la huella de Raspberry.<br><br>TLS verifica el certificado y la IP de MikroTik.</p><a href="#errores">¿Algo no responde? ↗</a><p class="rail-caption">No abras SSH ni API a internet. Tailscale transporta el acceso a Raspberry.</p></aside></div><div id="notice" role="status" aria-live="polite"></div><script type="module" src="/src/main.ts"></script></body></html>

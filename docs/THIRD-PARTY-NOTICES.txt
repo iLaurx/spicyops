@@ -1,4 +1,4 @@
-SpicyOps: licencia propia, titular y soporte pendientes de decisión del propietario.
+SpicyOps se distribuye bajo la licencia MIT; consultar LICENSE.
 Dependencias sin modificaciones. Este inventario usa los metadatos instalados.
 Se incluyen textos originales en licenses/ y fuentes LGPL instaladas en LGPL-sources.zip.
 librouteros se usa en la Raspberry existente; no se distribuye en el EXE.
@@ -35,7 +35,7 @@ https://pyinstaller.org/en/stable/license.html
 https://docs.python.org/3/license.html
 PyInstaller: GPL con excepción del bootloader; no sustituye licencias de dependencias.
 Paramiko declara LGPL-2.1; pystray declara LGPLv3 en metadatos.
-Revisar condiciones de redistribución con el propietario antes de publicar; no se ha decidido licencia propia.
+Los componentes de terceros conservan sus propias licencias y condiciones de redistribución.
 
 Tipografías locales (SIL Open Font License 1.1): Barlow, Barlow Semi Condensed y JetBrains Mono.
 Procedencia: https://github.com/google/fonts/tree/main/ofl/

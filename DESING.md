@@ -1,351 +1,570 @@
-# SpicyOps — guía de diseño y dirección de arte
+# DESING.md — Encargo para crear la guía web de conexión de SpicyOps
 
-Referencia: https://learn-arduino-red.vercel.app/es/  
-Examinada el 24 de octubre de 2026. Nombre del archivo solicitado: `DESING.md`.
+Revisión: 24 de octubre de 2026.
+Referencia visual: https://learn-arduino-red.vercel.app/es/
 
-## 1. Encargo para el agente
+## 1. Objetivo del agente
 
-Rediseñar la interfaz de SpicyOps para Windows con el lenguaje visual de la referencia: **papel crema, tinta azul marino, instrumentación técnica, ilustración isométrica y acentos turquesa**. Debe sentirse como una herramienta de trabajo cuidadosamente dibujada sobre una mesa de electrónica.
+Construir una **web educativa e interactiva en español** que enseñe a preparar Raspberry Pi, Tailscale, MikroTik y SpicyOps para Windows, desde la instalación inicial hasta una lectura correcta.
 
-Este archivo especifica una adaptación visual. Conservar las funciones y reglas del producto descritas en `README.md`, `AGENTS.md` y `docs/encargo-panel-conectado.md`. La navegación principal sigue siendo Analytics, Clientes y Conexiones. Mantener también diagnóstico, inventario excluido, respaldos y recuperación.
+Este documento sustituye el encargo anterior: ahora se construye una web de instrucciones; no se rediseña el programa Windows. Entregar contenido completo, comandos, diagramas, verificaciones y solución de errores. No limitarse a una landing promocional o una maqueta.
 
-No limitarse a cambiar el fondo: adaptar tipografía, superficies, iconos, diagramas, gráficos, tablas, formularios, estados, modales y composición. El resultado debe conservar la identidad SpicyOps y la claridad de una aplicación administrativa.
+Los comandos son material educativo para el administrador. No autorizan al agente a conectar equipos reales, instalar software en ellos, modificar routers, leer secretos o publicar la web. Construir y probar el sitio con datos ficticios y conservar los archivos ajenos al encargo.
 
-## 2. Qué se examinó y grado de certeza
+SpicyOps no instala Tailscale/Python/certificados ni despliega un agente permanente. La preparación inicial se realiza por separado.
 
-Se abrió la página real en navegador, se revisaron su composición compacta, el visor de la placa, la navegación inferior, las tarjetas de lecciones, los paneles Resumen y Especificaciones y el panel de código. Se leyeron estilos calculados y reglas CSS accesibles de la página para comprobar colores, familias tipográficas, dimensiones y variantes adaptables.
-
-La ventana disponible tenía un viewport CSS de 530 × 716. La composición amplia se reconstruye de las reglas CSS de la referencia; **no se verificó visualmente en un viewport de escritorio**. Las medidas de escritorio citadas abajo pertenecen a ese CSS, no a una captura amplia. Tampoco se auditó toda la aplicación educativa ni su accesibilidad completa.
-
-Evidencia local de consulta, no recursos para incorporar al producto:
-
-- [Composición compacta](docs/design-reference/arduino-es-home.png).
-- [Panel de especificaciones](docs/design-reference/arduino-es-specs.png).
-
-En este documento, **observado** describe la referencia. **Propuesta SpicyOps** establece decisiones para implementarla. Los tamaños y breakpoints propuestos son recomendaciones, no mediciones de la referencia.
-
-## 3. Lectura del estilo y del arte
-
-### Observado: cuaderno de ingeniería interactivo
-
-La base es cálida y clara, con una leve luminosidad radial. Predominan crema, arena y beige; no blanco puro. El texto importante y los contornos del hardware usan azul marino casi negro. El turquesa dirige la atención hacia puntos interactivos, selección y señales de actividad.
-
-La interfaz combina precisión técnica y calidez editorial:
-
-- Títulos condensados en mayúsculas, con separación entre letras.
-- Párrafos de una sans serif más abierta y cómoda.
-- Fechas, hora y código con tipografía monoespaciada.
-- Paneles delimitados por trazos beige finos, con radios moderados.
-- Botones con iconos simples y poca elevación.
-- Una zona visual protagonista y paneles auxiliares de información.
-- Cuadrícula isométrica, pistas de circuito y pequeños nodos como contexto gráfico.
-
-### Observado: ilustración técnica estilizada
-
-La placa se presenta en perspectiva isométrica/oblicua, con volumen legible, bordes oscuros marcados, caras de color mate, detalles simplificados y sombras de contacto. Los cuerpos azul violáceo contrastan con piezas metálicas crema/gris y pequeños componentes rojos. No tiene acabado fotográfico brillante.
-
-Los marcadores turquesa conectan visualmente el objeto con etiquetas crema de contorno fino. Las miniaturas del carrusel mantienen ese mismo vocabulario de objetos técnicos. La ilustración concentra el detalle; los controles alrededor son sobrios.
-
-### Propuesta SpicyOps: interpretación
-
-Trasladar esa sensación a una **consola de redes sobre papel técnico**. Usar diagramas vectoriales de PC → Raspberry → MikroTik y pequeños dibujos de equipos cuando ayuden a entender una conexión o un estado vacío. Mantener gráficas y tablas como protagonistas cuando ya existen datos.
-
-No es necesario añadir un motor 3D, WebGL, una placa Arduino ni un simulador. Un SVG propio con volumen isométrico simple puede transmitir el estilo con menor coste. No copiar logo, modelos, miniaturas ni textos de la web; las capturas solo documentan la referencia.
-
-## 4. Paleta comprobada y uso
-
-Estos valores se extrajeron de las variables CSS de la referencia:
-
-| Token de referencia | Valor | Papel visual |
-| --- | --- | --- |
-| `--bg` | `#F6EDDD` | Fondo crema |
-| `--bg-deep` | `#EFE3D1` | Crema más profundo |
-| `--sidebar` | `#E9DCCA` | Navegación arena |
-| `--card` | `#F9F2E5` | Superficie de tarjetas |
-| `--card-soft` | `#FAF4E9F7` | Superficie casi opaca; alfa F7 |
-| `--code-bg` | `#F8F0E3` | Recuadros técnicos |
-| `--line` | `#CEC0AD` | Contornos principales |
-| `--line-soft` | `#E2D7C7` | Divisores secundarios |
-| `--navy` | `#18213D` | Títulos y énfasis |
-| `--navy-2` | `#24304A` | Iconos y controles |
-| `--ink` | `#4F535B` | Texto de lectura |
-| `--muted` | `#696D74` | Texto secundario |
-| `--faint` | `#ADA293` | Detalle tenue |
-| `--teal` | `#1AA3A1` | Interacción y nodos |
-| `--teal-deep` | `#3F7F8E` | Selección y contornos activos |
-| `--trace` | `#D3BEA3` | Trazas decorativas |
-| `--track` | `#E3D8CA` | Pistas de progreso |
-
-Los colores de sintaxis comprobados son azul `#2A56A3` y naranja `#C0652D`; no hace falta trasladar un editor de código a SpicyOps.
-
-### Propuesta: distribución del color
-
-Aproximadamente 80% de la superficie debe permanecer en crema/arena; la tinta organiza texto y controles, y el acento ocupa áreas pequeñas. Esta proporción es una orientación visual, no una métrica rígida.
-
-El botón principal puede tener fondo navy y texto crema, como el control de ejecución de la referencia. Reservar turquesa para selección, foco y elementos de información. Conservar verde para Activa, ámbar para Error de conexión y gris para Desconectada. El rojo queda reservado a fallos y acciones de riesgo.
-
-Colores semánticos **propuestos para SpicyOps**, no extraídos del sitio:
-
-| Estado | Texto / borde | Fondo claro |
-| --- | --- | --- |
-| Correcto | `#246447` | `#E4EFE5` |
-| Advertencia | `#805116` | `#F4E6C9` |
-| Error / riesgo | `#993E37` | `#F5E1DA` |
-| Neutro | `#62656B` | `#EAE3D8` |
-| Información | `#315F71` | `#E1ECE8` |
-
-Comprobar contraste sobre el fondo real antes de aprobar. `--faint` se limita a decoración; las fechas de lectura, errores y condiciones operativas deben usar texto secundario legible. Evitar texto blanco pequeño sobre el turquesa claro.
-
-## 5. Tipografía
-
-### Observado
-
-La referencia usa **Barlow** para lectura, **Barlow Semi Condensed** para títulos/etiquetas y **JetBrains Mono** para información técnica. El título amplio declara 36.5 px, peso 600 y tracking de 0.13 em; el compacto observado usa 20 px. Los títulos de panel compactos rondan 18–21 px. Las pestañas observadas usan 14.5 px; las etiquetas sobre la placa, 11.5 px y peso 700.
-
-### Propuesta SpicyOps
-
-| Función | Fuente | Tamaño / peso | Tratamiento |
-| --- | --- | --- | --- |
-| Marca o título principal | Barlow Semi Condensed | 28–34 px / 600–700 | Mayúsculas; tracking 0.08–0.11 em |
-| Sección | Barlow Semi Condensed | 20–22 px / 700 | Tracking 0.04–0.06 em |
-| Etiquetas y navegación | Barlow Semi Condensed | 13–15 px / 600–700 | Mayúsculas solo en etiquetas cortas |
-| Cuerpo y formularios | Barlow | 15–16 px / 400–500 | Interlineado 1.45–1.6 |
-| Ayuda | Barlow | 13–14 px / 400 | Contraste suficiente |
-| IP, fechas y cantidades | JetBrains Mono | 12–14 px / 400–500 | Números tabulares |
-| Métrica principal | Barlow Semi Condensed | 30–36 px / 600–700 | Unidad más pequeña |
-
-No poner párrafos, nombres de clientes ni notas enteras en mayúsculas. Conservar la lectura natural de alias largos. Alinear cantidades por su valor y mantener la unidad junto al número.
-
-Distribuir fuentes localmente en la aplicación, conservando sus licencias; no depender de Google Fonts, CDN ni conexión a internet. Fallbacks: `Segoe UI`, `system-ui`, `sans-serif`; para datos, `Consolas`, `ui-monospace`, `monospace`.
-
-## 6. Composición, espacio y superficies
-
-### Observado en la referencia
-
-El CSS amplio define un artboard de 1672 × 941, una barra lateral de 72 px que puede expandirse a 214 px, una gran zona de visualización a la izquierda, paneles de información/código a la derecha y lecciones en una banda inferior. El modo compacto cambia a una cuadrícula fluida y lleva la navegación a una barra inferior.
-
-Los radios comprobados están entre 7 y 14 px. El CSS declara bordes de 1.5 px en muchos paneles, aunque el estilo calculado del viewport observado puede mostrar fracciones distintas. La selección de lección usa un borde de 2 px en turquesa oscuro. Las sombras son cálidas, cortas y discretas.
-
-### Propuesta de estructura SpicyOps
-
-Usar Grid/Flex y flujo normal; **no reproducir las posiciones absolutas ni escalar toda la aplicación como un lienzo fijo**. Las tablas, los nombres y los formularios necesitan crecer.
+## 2. Arquitectura y contrato real del programa
 
 ```text
-┌───────────────┬─────────────────────────────────────────────────┐
-│ SPICYOPS      │ Administración / vista       Localidad [▼]     │
-│               ├─────────────────────────────────────────────────┤
-│ Analytics     │ TÍTULO DE VISTA          Acción principal      │
-│ Clientes      │ Estado del perfil · automática · fecha de datos│
-│ Conexiones    │                                                 │
-│               │ Tarjetas o herramientas de consulta            │
-│               │                                                 │
-│               │ Gráfica, tabla o perfiles de conexión           │
-│ Localidad     │                                                 │
-│ Estado        ├─────────────────────────────────────────────────┤
-│               │ Versión · Respaldos         Última lectura      │
-└───────────────┴─────────────────────────────────────────────────┘
+WINDOWS                          RASPBERRY PI                         MIKROTIK
+SpicyOps + Tailscale ── SSH ─────> Tailscale + OpenSSH ── API-SSL ────> RouterOS
+                       TCP 22     Python + librouteros     TCP 8729    colas simples
+                       tailnet                            LAN         TLS validado
 ```
 
-- Barra lateral arena de aproximadamente 200–220 px con iconos y nombres visibles. Priorizar reconocimiento sobre imitar la barra estrecha del ejemplo.
-- Área de trabajo crema, ancho máximo aproximado 1440–1600 px y margen interno 24–32 px; en móvil 16 px.
-- Ritmo de espaciado: 4, 8, 12, 16, 24, 32 y 48 px.
-- Separación entre paneles: 16–24 px. Padding de panel: 20–24 px.
-- Radios: 8 px en controles, 12 px en paneles, 14 px en una zona ilustrada.
-- Evitar apilar tarjetas dentro de tarjetas sin necesidad; un divisor puede resolver la agrupación.
-- Reservar líneas de circuito y cuadrícula isométrica a estados vacíos, encabezados o diagramas. No ponerlas detrás de tablas, inputs o etiquetas de gráficas.
+Windows llega a la IP Tailscale o nombre de Raspberry. El cliente SSH de SpicyOps ejecuta un lector efímero; Raspberry consulta su MikroTik por LAN.
 
-No usar grandes degradados de marca, luces neón, vidrio desenfocado, sombras negras pesadas ni un fondo oscuro como superficie principal. El volumen lo aportan las ilustraciones y los bordes, no una elevación exagerada de cada panel.
+- Utilizar **OpenSSH normal sobre Tailscale**. No habilitar Tailscale SSH en este recorrido.
+- No hace falta instalar Tailscale en MikroTik, anunciar subredes, configurar exit nodes/Funnel ni abrir puertos en internet.
+- API-SSL no es REST API, WebFig, WinBox ni SSH al MikroTik.
+- SpicyOps verifica la huella SSH. El lector verifica CA, vigencia e identidad TLS.
+- El puerto API actual está fijado en **8729**; el formulario del MikroTik acepta **IPv4**, no nombre DNS.
+- El certificado de servidor necesita **SAN de tipo IP igual a esa IPv4**. Common-name no lo sustituye.
+- Python y CA están en Raspberry; la clave privada SSH, si se utiliza, está en Windows.
+- Varias localidades pueden repetir IP privadas: cada Raspberry consulta su router y cada perfil conserva su destino.
 
-## 7. Componentes e interacción
+Contrato contrastado con `portal/forms.py`, `portal/connector.py` y `portal/remote_reader.py`. Al implementar, leer README y encargo vigente; documentos históricos no deben reactivar PostgreSQL, simulador ni alta manual de clientes.
 
-### Navegación
+## 3. Diseño visual
 
-Iconos navy con el mismo grosor y familia visual. Elemento activo: fondo de tinta al 6–9%, pequeña marca turquesa y texto de mayor peso. Mantener `aria-current` y foco visible. El selector de localidad permanece accesible; la opción Todos conserva su comportamiento actual.
+### Estilo y arte
 
-En móvil se propone navegación inferior con las tres secciones, **icono y nombre**, altura aproximada de 64–72 px y espacio inferior para que no tape el contenido. Respaldos sigue accesible desde el pie. No añadir accesos a funciones inexistentes por reproducir los seis iconos de la referencia.
+Cuaderno técnico interactivo: papel crema, tinta navy, líneas beige, títulos condensados, código monoespaciado y acentos turquesa. Volúmenes isométricos mate con contornos oscuros y sombras de contacto suaves.
 
-### Tarjetas y datos
+Se revisó visualmente el modo compacto de la referencia y se leyeron estilos CSS. El viewport observado fue 530 × 716; la estructura amplia se estudió mediante CSS, sin captura de escritorio. Las capturas están en `docs/design-reference/` si se dispone del repositorio; son consulta, no recursos para publicar.
 
-Superficie `--card`, borde `--line`, título navy y etiqueta condensada. Métricas grandes con unidad secundaria y nota de procedencia/fecha. Usar `—` o el mensaje correspondiente cuando no hay datos; cero solo cuando se conoce que el valor es cero.
+Valores extraídos de la referencia:
 
-Las fichas técnicas del panel Especificaciones inspiran un patrón de etiqueta corta arriba y valor debajo, útil para identidad del router, IP, versión y última lectura. No copiar su texto tenue si perjudica el contraste.
-
-### Botones
-
-- Principal: navy, texto crema, radio 8 px, icono lineal y etiqueta clara.
-- Secundario: crema, borde beige, texto navy.
-- Acción de riesgo: rojo semántico; usarlo solo cuando corresponda al contexto.
-- Icono aislado: nombre accesible y tooltip; área de interacción propuesta de al menos 44 × 44 px.
-- Hover: cambio sutil de fondo/borde. En tarjetas seleccionables se admite desplazamiento de hasta 2 px, como la referencia; evitarlo en filas de tabla.
-- Disabled: aspecto distinguible y explicación cuando la causa no sea evidente. No expresar estado únicamente con opacidad.
-
-### Formularios
-
-Campos crema pálido, borde beige, texto tinta, label siempre visible y ayuda debajo. Altura propuesta 44 px; `textarea` con crecimiento vertical. Foco con contorno contrastado de 2 px y separación de 2–3 px. Validar visualmente su contraste.
-
-Errores inline junto al campo y resumen cuando corresponda. Mantener nombres, tipos, atributos `data-*`, validación y comportamiento de envío. Los secretos conservan el tratamiento actual; no incluirlos en maquetas, capturas ni ejemplos.
-
-### Pestañas y controles segmentados
-
-La referencia usa pestañas de texto sin píldoras grandes; la activa tiene una línea navy corta de unos 4–4.5 px y mayor peso. Adoptar ese patrón donde ya exista navegación secundaria. El selector Mbps/MB/s puede ser un control segmentado compacto, sin cambiar el cálculo.
-
-No crear pestañas nuevas solo para que se parezca a la referencia.
-
-### Avisos y ventanas
-
-Avisos con fondo semántico claro, texto legible, icono y cierre. Conservar el comportamiento temporal actual, incluida la pausa por foco/hover. Distinguir esos avisos de errores persistentes y problemas que requieren intervención.
-
-Modales crema, contorno beige, título navy, sombra cálida y backdrop tenue. Conservar foco inicial, navegación por teclado, devolución del foco al cerrar y reglas actuales de cierre. Las confirmaciones operativas deben mostrar claramente localidad, cliente e IP.
-
-### Movimiento
-
-La referencia declara transiciones de unos 150–250 ms en controles, 250 ms en tarjetas y hasta 450 ms en expansión de paneles. Para SpicyOps se proponen transiciones de 120–200 ms en color, borde y opacidad. El movimiento es auxiliar.
-
-Respetar `prefers-reduced-motion`: eliminar desplazamientos, pulsaciones y animaciones decorativas. No añadir partículas, tráfico animado continuo ni un reloj que sugiera que los datos se actualizan cada segundo.
-
-## 8. Aplicación por pantalla
-
-### Analytics
-
-Conservar métricas, gráfica de consumo observado y estimaciones existentes. La gráfica ocupa el panel dominante. Las métricas forman una fila o cuadrícula según el ancho. Título condensado, valores navy, ayudas grises legibles y fecha de lectura visible.
-
-Proponer barras en turquesa oscuro y azul pizarra, conservando los colores por día y el detalle temporal actual. Ejes y cuadrícula beige muy suaves; leyenda y valores con contraste suficiente. Mantener inicio/fin del intervalo y desplazamiento horizontal en pantallas estrechas. Ofrecer la información también con foco o alternativa textual si hoy depende solo del cursor.
-
-No representar contadores acumulados como consumo mensual real. Las aproximaciones por uptime siguen identificadas como aproximaciones; no añadir nuevos selectores de proyección ni inventar continuidad donde faltan lecturas. Sin intervalo válido, mostrar el estado vacío real.
-
-### Clientes
-
-Usar una tabla clara, con cabecera crema un poco más profunda, divisores suaves, filas de altura cómoda y hover discreto. Icono de usuario vectorial consistente; nombre en Barlow y datos técnicos en monoespaciada. Mantener búsqueda, localidad por fila cuando corresponde, IP, plan, consumo, estado y acciones.
-
-No reducir fuente ni ocultar información crítica para forzar todas las columnas. Conservar la adaptación a tarjetas en anchos reducidos y etiquetas por dato. Los nombres extensos deben envolver sin desplazar acciones fuera de pantalla.
-
-Suspender conserva el interruptor Sí/No y la confirmación. El color no debe confundir suspensión con conectividad: ámbar indica restricción configurada cuando corresponde; un verde no significa acceso físico a internet comprobado. No actualizar el interruptor de forma optimista antes de leer el resultado. Los casos inciertos conservan su instrucción de sincronizar.
-
-Ver datos abre una ficha con los datos leídos diferenciados de alias/contacto/ubicación/notas editables. La estética de ficha técnica ayuda a separar grupos sin cambiar qué fuente manda.
-
-### Conexiones y configuración
-
-Tarjetas crema por localidad, icono o pequeño equipo isométrico, nombre, etiqueta de estado y fechas. Conservar Configurar, Diagnosticar, Conectar/Sincronizar, Desconectar y programación automática según la disponibilidad actual.
-
-El diagrama PC → Raspberry → MikroTik puede usar líneas beige y nodos turquesa como recurso explicativo. Debe identificarse como esquema; no inventar estado de enlaces ni animar paquetes como si fueran telemetría real.
-
-Agrupar el formulario por acceso SSH, API-SSL/certificado y opciones existentes. Las opciones avanzadas mantienen su visibilidad actual o una divulgación accesible. Huellas, validación TLS, advertencias y errores no pueden perder prioridad visual por el rediseño.
-
-Mostrar por separado estado del perfil, fecha de los datos y resultado de la última operación. No deducir disponibilidad actual de una lectura guardada ni introducir caducidades nuevas.
-
-### Diagnóstico, inventario, respaldos y recuperación
-
-Extender el mismo sistema de superficies y tipografía. Diagnóstico: etapas legibles con texto e icono, no solo puntos de color. Inventario: motivos de exclusión y acciones claras. Recuperación: instrucciones y errores persistentes visibles; las acciones que afectan archivos deben seguir distinguiéndose con claridad.
-
-### Instalación vacía
-
-Un panel cálido con un SVG propio pequeño, título breve, explicación útil y la acción Nueva localidad. No llenar Analytics con cifras o gráficas sintéticas. La ilustración puede mostrar equipos genéricos sin nombres, IP ni credenciales reales.
-
-## 9. Especificación de ilustración e iconografía
-
-Para crear un recurso original de SpicyOps, usar esta dirección:
-
-> Ilustración técnica isométrica de una Raspberry y un router genéricos sobre una base crema, volúmenes mate azul pizarra y gris cálido, contornos navy de grosor uniforme, perspectiva consistente, sombras de contacto suaves, puertos simplificados y un único indicador turquesa. Composición limpia y funcional, sin texto incrustado, sin logos de terceros y sin fondo fotográfico.
-
-Preferir SVG para iconos y diagramas del producto. Si se usan bitmaps, suministrar resolución suficiente y variantes sin pérdida de legibilidad. Mantener el arte decorativo fuera del árbol accesible; si explica un flujo, acompañarlo de texto equivalente.
-
-Reutilizar y ajustar los símbolos SVG actuales de SpicyOps antes de incorporar otra biblioteca. Contornos aproximados de 1.7–2 px, extremos redondeados, rejilla coherente de 24 px y tamaño visible de 20–24 px. Evitar emojis y mezclar iconos sólidos, fotográficos y lineales en un mismo grupo.
-
-## 10. Base de tokens propuesta
-
-Esta base facilita la adaptación; no es un parche completo ni debe pegarse al final de una cascada oscura sin revisar los componentes:
-
-```css
-:root {
-  color-scheme: light;
-  --bg: #f6eddd;
-  --paper: #f9f2e5;
-  --surface-soft: #faf4e9;
-  --surface-deep: #efe3d1;
-  --sidebar: #e9dcca;
-  --ink: #4f535b;
-  --heading: #18213d;
-  --muted: #696d74;
-  --border: #cec0ad;
-  --border-soft: #e2d7c7;
-  --brand: #3f7f8e;
-  --accent: #1aa3a1;
-  --action: #18213d;
-  --on-action: #f9f2e5;
-  --focus: #315f71;
-  --shadow: 0 6px 16px -12px rgb(60 45 20 / 40%);
-  --radius-control: 8px;
-  --radius-panel: 12px;
-  --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
-  --font-heading: 'Barlow Semi Condensed', 'Barlow', 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', Consolas, ui-monospace, monospace;
-}
-
-body { background: var(--bg); color: var(--ink); }
-h1, h2, h3 { color: var(--heading); font-family: var(--font-heading); }
-.button { background: var(--action); color: var(--on-action); }
-.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
-```
-
-Hay colores oscuros y colores literales repetidos en el CSS actual. Revisar también pseudoelementos, estados hover/disabled, campos, modales, leyendas, SVG, barras y reglas responsive. Migrar esas variantes a tokens semánticos para evitar texto claro sobre superficies claras o bloques oscuros residuales.
-
-## 11. Adaptación a distintos tamaños
-
-Breakpoints **propuestos**, a ajustar según el contenido real:
-
-| Ancho CSS | Composición |
+| Uso | Color |
 | --- | --- |
-| ≥ 1200 px | Navegación lateral; métricas en fila; panel dominante amplio |
-| 768–1199 px | Paneles que se apilan cuando falta espacio; métricas en dos columnas |
-| < 768 px | Navegación inferior; una columna; acciones reordenadas sin ocultarlas |
-| 360–430 px | Campos y tarjetas al ancho disponible; nombres largos envuelven |
+| Fondo | `#F6EDDD` |
+| Fondo profundo | `#EFE3D1` |
+| Navegación | `#E9DCCA` |
+| Tarjeta | `#F9F2E5` |
+| Código | `#F8F0E3` |
+| Borde / divisor | `#CEC0AD` / `#E2D7C7` |
+| Títulos / iconos | `#18213D` / `#24304A` |
+| Texto / secundario | `#4F535B` / `#696D74` |
+| Acento / selección | `#1AA3A1` / `#3F7F8E` |
+| Pistas decorativas | `#D3BEA3` |
 
-No sustituir automáticamente el breakpoint vigente de Clientes: comprobar primero sus ocho columnas posibles y preservar el paso a tarjetas tan pronto como lo necesite. Evitar scroll horizontal global; admitirlo únicamente en regiones justificadas como la gráfica histórica. Comprobar zoom del 200% y ventanas de poca altura.
+Fuentes: Barlow para lectura, Barlow Semi Condensed para títulos y JetBrains Mono para código/datos. Distribuir localmente con licencias; fallback Segoe UI/Consolas.
 
-## 12. Ruta de implementación en este repositorio
+Propuesta para la web: título 32–40 px, sección 22–26 px, cuerpo 16 px, código 13–14 px, ayudas 14 px. Radios de 8 px en controles y 12–14 px en paneles, contorno fino y sombras cálidas leves. Estas medidas son recomendaciones, no mediciones de escritorio de la referencia.
 
-1. Leer el estado actual y conservar los cambios previos del usuario. El árbol tenía modificaciones pendientes al redactar esta guía.
-2. Empezar por `portal/static/portal/app.css`: tokens, tipografía, superficies y estados. Consolidar los overrides del tema oscuro en vez de acumular otra capa de excepciones.
-3. Ajustar estructura y navegación en `portal/templates/portal/base.html` manteniendo enlaces, bloques, formularios y atributos usados por la actualización en vivo.
-4. Adaptar `analytics.html`, `clients.html`, `connections.html` y `connect.html`; después `diagnostic.html`, `inventory.html`, `locked.html` y `recovery.html`.
-5. Tocar `portal/static/portal/app.js` únicamente cuando la presentación o accesibilidad lo requiera. No alterar programación, persistencia o destino de acciones como parte del cambio visual.
-6. Añadir fuentes e ilustraciones propias a recursos estáticos locales y comprobar su inclusión en el paquete Windows y avisos de terceros.
-7. Revisar la interfaz con datos sintéticos aislados y estado vacío. Ejecutar las comprobaciones vigentes pertinentes; reconstruir/verificar el ejecutable si se entrega una nueva distribución.
+Crear SVG originales de PC, Raspberry, router y cableado. Mantener perspectiva coherente, navy, azul pizarra, crema e indicadores turquesa. Etiquetar “SSH · 22” y “API-SSL · 8729”. No copiar logos/modelos Arduino. No hace falta WebGL.
 
-El rediseño no autoriza conectarse a equipos reales, modificar MikroTik, instalar servicios, cambiar permisos ni leer carpetas sensibles. Para pruebas usar los mecanismos locales ya existentes, sin cargar el estado privado del operador.
+Reservar cuadrícula y trazas a diagramas, nunca detrás del código o texto. Evitar neón, vidrio, grandes degradados y fondo oscuro predominante. No animar tráfico como si la web comprobara conexiones.
 
-## 13. Criterios de aceptación
+## 4. Estructura e interacción
 
-### Fidelidad visual
+Escritorio: índice lateral numerado, contenido central y panel auxiliar “Dónde ejecutar / Qué necesitas / Qué debes ver”. Encabezado “Conecta tu red con SpicyOps” y diagrama de tres equipos.
 
-- [ ] La primera impresión es papel crema con tinta navy y detalles turquesa.
-- [ ] Se reconocen la tipografía condensada, los contornos beige y la sobriedad de los controles.
-- [ ] Los recursos de red comparten una dirección técnica e isométrica coherente cuando se emplean.
-- [ ] El arte acompaña; las tablas, cifras y acciones mantienen prioridad.
-- [ ] No quedan superficies oscuras accidentales, colores literales incompatibles ni controles de estilos mezclados.
+Móvil: una columna, selector de etapa y Anterior/Siguiente. Los bloques de código pueden desplazarse dentro de su contenedor; la página completa no debe desbordar.
 
-### Uso y accesibilidad
+Implementar:
 
-- [ ] Texto normal con contraste mínimo 4.5:1; texto grande y elementos no textuales esenciales según su criterio aplicable de 3:1.
-- [ ] Foco visible, recorrido de teclado coherente y nombres accesibles para iconos.
-- [ ] Estado expresado con texto además de color; etiquetas y errores legibles.
-- [ ] Sin contenido cortado a 360, 430, 768, 1024 y 1440 px, ni al 200% de zoom.
-- [ ] Modales, desplegables, navegación inferior y ayudas no se tapan entre sí.
-- [ ] Movimiento reducido y recursos disponibles sin internet.
+- Anclas compartibles, búsqueda local, glosario y versión/fecha de revisión.
+- Cada etapa indica equipo, terminal, privilegios, consulta/cambio, instrucciones, resultado esperado y errores.
+- Bloques separados: Raspberry · Bash; Windows · PowerShell; MikroTik · RouterOS.
+- Copiar sin prompts ni números de línea. Diferenciar consulta, instalación y configuración.
+- Casillas “Ya lo comprobé”, con progreso local opcional. Son declaración del usuario, no telemetría real.
+- Impresión con todos los pasos, incluso paneles cerrados.
+- Teclado, foco visible, contraste y movimiento reducido.
+- Sin consola remota, botones Ejecutar ni conexión del sitio a dispositivos.
+- Sin formularios de contraseñas, auth keys, claves privadas o respaldos. Sin telemetría que capture comandos, IP o portapapeles.
 
-### Comportamiento conservado
+Puede existir configurador **local** de datos no secretos: IP, nombres y rutas. Validarlos estrictamente según terminal; no interpolar texto arbitrario. No enviarlos ni persistirlos por defecto.
 
-- [ ] Arranque vacío, sin clientes, conexiones o gráficas ficticios en el producto.
-- [ ] Localidades y Todos mantienen aislamiento, búsqueda y destino individual de acciones.
-- [ ] Sincronización no pierde borradores ni confirma acciones pendientes.
-- [ ] Morosos mantiene confirmación, validación y lectura posterior; no hay cambio optimista.
-- [ ] Unidades, contadores, estimaciones y fechas conservan su significado.
-- [ ] Diagnóstico, exclusiones, programación, respaldos y recuperación siguen accesibles.
-- [ ] Se documentan vistas/casos realmente comprobados y cualquier prueba pendiente. Una captura no acredita conexión física.
+Los bloques con `<MARCADORES>` son plantillas: desactivar Copiar hasta resolverlos. Las contraseñas se introducen solo en terminal local, WinBox o SpicyOps; nunca en la web. No usar contraseñas predeterminadas.
 
-## 14. Entrega esperada del agente implementador
+Elegir una implementación estática con contenido versionado y recursos locales. No se necesita backend/base de datos. Crear proyecto separado o carpeta nueva; no sobrescribir el portal Django.
 
-Entregar el rediseño aplicado, capturas de Analytics/Clientes/Conexiones en escritorio y móvil con datos sintéticos, captura de arranque vacío y de una confirmación, relación breve de cambios y verificaciones realmente ejecutadas. Si se genera una distribución, comprobar que incluye recursos locales y corresponde a las fuentes.
+## 5. Prerrequisitos y ejemplo
 
-Esta guía por sí sola no acredita implementación, pruebas de UI ni reconstrucción del ejecutable. Su propósito es ofrecer una referencia verificable y decisiones suficientes para ejecutar el rediseño.
+Requerir Raspberry Pi OS compatible, alimentación estable, internet/DNS y acceso inicial local o SSH LAN; usuario existente, sin asumir `pi`; acceso administrativo autorizado a MikroTik; conectividad LAN entre ambos; hora correcta en los tres equipos e IP LAN estable de Raspberry, preferiblemente reserva DHCP preparada por el administrador.
+
+Registrar SO, arquitectura y RouterOS. ARMv6 no equivale a ARMv7/ARM64. La guía no reinstala el SO, crea abonados ni modifica planes. SpicyOps importa colas simples IPv4 individuales existentes.
+
+Escenario completamente ficticio:
+
+| Dato | Valor |
+| --- | --- |
+| Localidad | Localidad de ejemplo |
+| MikroTik LAN | `192.168.88.1` |
+| Raspberry LAN | `192.168.88.90` |
+| Raspberry Tailscale | `100.70.10.1` |
+| Windows Tailscale | `100.70.10.2` |
+| Usuario Linux | `operador` |
+| Usuario API | `spicyops-reader` |
+| Python | `/home/operador/spicyops-venv/bin/python` |
+| CA | `/home/operador/spicyops-certs/spicyops-ca.crt` |
+
+La IP LAN de Raspberry no es su IP Tailscale: MikroTik normalmente ve la primera como origen de la API. No afirmar que la web detectó estos valores.
+
+
+## 6. Paso 1 — Instalar Tailscale en Raspberry
+
+**Raspberry · Bash.** Consultar primero:
+
+```bash
+cat /etc/os-release
+uname -m
+python3 --version
+date -Is
+ip -br address
+ip route
+```
+
+Explicar cómo identificar distribución, arquitectura, IP y ruta. Python se prepara en el paso 4 si falta. No reinstalar el sistema ni borrar la microSD.
+
+Para Raspberry Pi OS compatible con el instalador oficial:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y curl ca-certificates
+curl -fsSL https://tailscale.com/install.sh -o /tmp/spicyops-tailscale-install.sh
+less /tmp/spicyops-tailscale-install.sh
+```
+
+Explicar que `q` sale de `less`. Separar descarga/revisión de instalación:
+
+```bash
+sh /tmp/spicyops-tailscale-install.sh
+sudo systemctl enable --now tailscaled
+sudo tailscale up
+```
+
+El instalador puede pedir privilegios. Abrir en navegador la URL de autenticación que devuelve y registrar el dispositivo en la tailnet autorizada. No pegar esa URL en chats ni almacenarla en la web.
+
+Verificar:
+
+```bash
+tailscale version
+tailscale ip -4
+tailscale status
+systemctl is-active tailscaled
+```
+
+Resultado: servicio activo, autenticación completada e IP Tailscale asignada. Si requiere aprobación del dispositivo, completarla en la consola administrativa.
+
+Si el instalador no soporta SO/arquitectura, detener la receta y dirigir al selector oficial. No descargar binarios ARM al azar ni prometer cualquier Raspberry antigua. No usar `--ssh`, `--advertise-routes` o `--advertise-exit-node`.
+
+Fuentes: [Linux](https://tailscale.com/docs/install/linux), [paquetes estables](https://pkgs.tailscale.com/stable/).
+
+## 7. Paso 2 — Tailscale en Windows y permisos
+
+Instalar desde el sitio oficial, iniciar sesión y comprobar que Windows y Raspberry pertenecen a la misma tailnet o tienen acceso compartido autorizado. Estar en la misma tailnet no garantiza permiso TCP 22.
+
+**Windows · PowerShell:**
+
+```powershell
+tailscale status
+tailscale ping 100.70.10.1
+Test-NetConnection 100.70.10.1 -Port 22
+```
+
+Si no encuentra `tailscale`, reabrir terminal o usar la ruta instalada, normalmente:
+
+```powershell
+& "$env:ProgramFiles\Tailscale\tailscale.exe" status
+```
+
+El ping VPN no sustituye SSH. TCP 22 puede fallar todavía porque OpenSSH no esté habilitado hasta el paso siguiente.
+
+Para tailnets restrictivas, mostrar este **fragmento de grant**, que un administrador integra en la política existente:
+
+```json
+{
+  "src": ["100.70.10.2"],
+  "dst": ["100.70.10.1"],
+  "ip": ["tcp:22"]
+}
+```
+
+No es una política completa. No reemplazar toda la política ni dar acceso global. Los permisos son acumulativos: este fragmento no revoca otras reglas más amplias.
+
+Usar OpenSSH normal; no habilitar Tailscale SSH. Si ya está habilitado en Raspberry, el administrador debe revisar esa configuración antes de continuar. La web no debe cambiarla automáticamente.
+
+Fuentes: [Windows](https://tailscale.com/docs/install/windows), [grants](https://tailscale.com/docs/reference/syntax/grants), [ejemplos](https://tailscale.com/docs/reference/examples/grants). No fijar precios o límites de planes.
+
+## 8. Paso 3 — OpenSSH y huella de Raspberry
+
+**Raspberry · Bash**, desde consola inicial o acceso LAN existente:
+
+```bash
+sudo apt-get install -y openssh-server
+sudo systemctl enable --now ssh
+systemctl is-active ssh
+sudo sshd -t
+ss -ltn 'sport = :22'
+```
+
+La cuenta de SpicyOps no necesita sudo para ejecutar el lector; necesita sesión SSH y lectura de su entorno/CA. Conservar la autenticación acordada por el administrador. No habilitar root o contraseñas globalmente como arreglo genérico.
+
+Si existe firewall local, permitir únicamente el acceso necesario desde la PC autorizada por `tailscale0` al puerto SSH. No activar, vaciar o reemplazar UFW/nftables como receta universal. Política Tailscale y firewall Linux son controles distintos.
+
+Desde consola confiable, obtener huellas:
+
+```bash
+sudo ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256
+sudo ssh-keygen -lf /etc/ssh/ssh_host_ecdsa_key.pub -E sha256
+sudo ssh-keygen -lf /etc/ssh/ssh_host_rsa_key.pub -E sha256
+```
+
+Un archivo puede no existir. Comparar con la huella del **mismo tipo de clave**; OpenSSH y Paramiko pueden negociar tipos distintos. No aceptar huellas sin verificar ni borrar `known_hosts` ante un cambio.
+
+**Windows · PowerShell:**
+
+```powershell
+ssh -p 22 operador@100.70.10.1
+```
+
+Si faltan `ssh`/`scp`, explicar la característica opcional **Cliente OpenSSH** de Windows. SpicyOps incluye su cliente: esta característica es solo para pruebas/transferencias manuales.
+
+Ruta básica: contraseña de cuenta existente si ya está permitida. Alternativa: clave privada Windows previamente autorizada en `authorized_keys`, sin sobrescribir claves anteriores. Enlazar el procedimiento oficial de preparación. No exigir contraseña en un equipo que funciona solo con claves.
+
+Fuente: [acceso remoto de Raspberry Pi](https://www.raspberrypi.com/documentation/computers/remote-access.html).
+
+## 9. Paso 4 — Python y librouteros
+
+**Raspberry · Bash.** Entorno virtual, sin `--break-system-packages`:
+
+```bash
+sudo apt-get install -y python3 python3-venv python3-pip openssl
+python3 --version
+python3 -m venv "$HOME/spicyops-venv"
+"$HOME/spicyops-venv/bin/python" -m pip install "librouteros==4.2.2"
+"$HOME/spicyops-venv/bin/python" -m pip check
+"$HOME/spicyops-venv/bin/python" -c "import ssl, librouteros; from importlib.metadata import version; print(version('librouteros')); print(ssl.OPENSSL_VERSION)"
+printf '%s\n' "$HOME/spicyops-venv/bin/python"
+```
+
+Guardar la ruta absoluta del ejecutable dentro del venv. No resolver el enlace simbólico y poner el Python del sistema: perdería la biblioteca del entorno.
+
+Python 3.11 es la base contemplada por el lector. Si falta, revisar compatibilidad antes de seguir; no actualizar remotamente el SO sin un plan. librouteros 4.2.2 es una base explícita, no una promesa de validación de todos los routers/arquitecturas.
+
+`python3` también debe estar en el PATH de la sesión SSH: el conector lo utiliza para iniciar el intérprete elegido. No hace falta activar el venv en cada sesión, instalar Django en Raspberry ni crear servicio SpicyOps.
+
+Si ya existe entorno funcional, verificarlo y reutilizar su ruta. Registrar versiones reales; disponibilidad de paquetes no acredita prueba física ARMv6.
+
+Fuentes: [librouteros 4.2.2](https://pypi.org/project/librouteros/4.2.2/), [conexión](https://librouteros.readthedocs.io/en/latest/connect.html). No copiar los ejemplos de esa biblioteca que desactivan verificación TLS.
+
+## 10. Paso 5 — Inspeccionar MikroTik
+
+**MikroTik · WinBox → New Terminal o consola administrativa confiable.** No pegar RouterOS en PowerShell o Bash.
+
+```routeros
+/system resource print
+/system clock print
+/ip address print
+/ip service print detail where name=api-ssl
+/certificate print detail
+/user group print
+/ip firewall filter print detail where chain=input
+/ip firewall raw print
+/queue simple print count-only
+```
+
+Consultar localmente, sin pedir subir las salidas. Registrar estado previo de servicio, certificado y reglas. Guardar respaldo privado mediante los procedimientos administrativos existentes y tener vía de recuperación antes de cambios remotos.
+
+Rutas que debe ofrecer la web:
+
+1. **API-SSL y CA ya preparadas:** verificar IP/SAN, vigencia y acceso; reutilizar y saltar creación.
+2. **Preparación nueva:** seguir los pasos de certificados, usuario y servicio.
+3. **Servicio compartido:** revisar consumidores antes de reemplazar certificado, puerto u orígenes.
+
+La sintaxis tradicional se usa habitualmente en RouterOS 6/7; el agente debe declarar las versiones que realmente comprobó. No afirmar compatibilidad física universal. Si un equipo antiguo rechaza propiedades o TLS, documentar el bloqueo sin degradar a API sin cifrar.
+
+## 11. Paso 6 — Crear CA y certificado de servidor
+
+**Modifica MikroTik; solo preparación nueva.** Comprobar que los nombres no existan. Ejecutar por bloques y esperar que termine cada firma.
+
+Crear CA:
+
+```routeros
+/certificate add name=spicyops-ca-template common-name=SpicyOps-Local-CA key-size=2048 days-valid=1825 key-usage=key-cert-sign,crl-sign
+/certificate sign spicyops-ca-template name=spicyops-ca
+/certificate set [find where name="spicyops-ca"] trusted=yes
+```
+
+Crear certificado para la IP **real** del MikroTik:
+
+```routeros
+/certificate add name=spicyops-api-template common-name=SpicyOps-API subject-alt-name=IP:192.168.88.1 key-size=2048 days-valid=365 key-usage=digital-signature,key-encipherment,tls-server
+/certificate sign spicyops-api-template ca=spicyops-ca name=spicyops-api
+/certificate print detail where name=spicyops-api
+```
+
+Comprobar firma, clave privada del servidor, vigencia y SAN. Common-name no sustituye SAN de IP. Cambiar la IP utilizada por el programa puede requerir otro certificado válido.
+
+Exportar **solo la CA pública**:
+
+```routeros
+/certificate export-certificate spicyops-ca type=pem file-name=spicyops-ca
+/file print where name~"spicyops-ca"
+```
+
+No añadir `export-passphrase` ni exportar claves privadas. Descargar `spicyops-ca.crt` de Files de WinBox por sesión confiable. La clave privada de CA y la del servidor permanecen bajo control del administrador del router.
+
+No confiar en archivos de origen no verificado. Registrar emisor, huella y vencimiento; incluir recordatorio de renovación.
+
+Fuentes: [certificados/SAN](https://manual.mikrotik.com/docs/authentication-authorization-accounting/certificates/), [exportación PEM](https://help.mikrotik.com/docs/spaces/ROS/pages/2555969/Certificates).
+
+
+## 12. Paso 7 — Usuario de lectura y API-SSL
+
+Crear un grupo propio mínimo. El grupo predeterminado `read` contiene permisos adicionales y no debe reutilizarse como si fuera equivalente:
+
+```routeros
+/user group add name=spicyops-read policy=read,api
+```
+
+Plantilla **no copiable con marcadores pendientes**, con contraseña única elegida localmente:
+
+```routeros
+/user add name=spicyops-reader group=spicyops-read address=192.168.88.90/32 password="<CLAVE_UNICA_LOCAL>"
+```
+
+Alternativa obligatoria en la web: crear usuario en WinBox → System → Users, seleccionar grupo, origen y contraseña. La web nunca captura esa clave. Si se edita el comando localmente, respetar el escape de caracteres de RouterOS; WinBox evita errores de interpolación.
+
+El origen es la IP LAN que ve MikroTik para Raspberry; revisar NAT intermedio si existe. No dar `full`, `sensitive`, `policy`, `reboot` ni `write` a la cuenta de consulta.
+
+Tras preparar certificado y revisar consumidores existentes:
+
+```routeros
+/ip service set [find where name="api-ssl"] disabled=no port=8729 certificate=spicyops-api address=192.168.88.90/32 tls-version=only-1.2
+/ip service print detail where name=api-ssl
+```
+
+`address=` **reemplaza** la lista de orígenes del servicio. En un servicio compartido, revisar y conservar los otros orígenes autorizados. No habilitar API 8728 sin TLS ni deshabilitar otros servicios administrativos como efecto lateral.
+
+Fuentes: [usuarios/políticas](https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User), [servicios](https://help.mikrotik.com/docs/spaces/ROS/pages/103841820/Services), [API](https://manual.mikrotik.com/docs/developer-guides/api/).
+
+## 13. Paso 8 — Firewall
+
+La restricción del servicio no sustituye al firewall. El destino es el propio router: corresponde a **input**, no forward.
+
+Si la política actual bloquea el flujo, añadir una aceptación limitada a Raspberry LAN y TCP 8729 **antes del descarte pertinente**. Plantilla:
+
+```routeros
+/ip firewall filter add chain=input action=accept protocol=tcp src-address=192.168.88.90/32 dst-address=192.168.88.1 dst-port=8729 place-before=<ID_REGLA_INPUT_QUE_BLOQUEA> comment="SpicyOps API-SSL desde Raspberry"
+```
+
+El administrador obtiene el ID de la configuración vigente; el configurador no lo adivina. Alternativa: crear en IP → Firewall → Filter Rules y ubicar antes del descarte adecuado. Si la política ya permite ese flujo, no añadir una regla por costumbre.
+
+No vaciar reglas, cambiar políticas globales, insertar indiscriminadamente en posición cero, permitir cualquier origen, crear NAT hacia internet o alterar FastTrack. Revisar raw si descarta antes del filtro. No presentar esta excepción como auditoría del firewall completo.
+
+```routeros
+/ip firewall filter print stats where comment="SpicyOps API-SSL desde Raspberry"
+```
+
+Ese contador no acredita login API. La conexión TLS se comprueba desde Raspberry en el paso siguiente.
+
+Fuente: [seguridad del router y orden de reglas](https://manual.mikrotik.com/docs/getting-started/securing-your-router/).
+
+## 14. Paso 9 — Transferir CA y validar TLS
+
+**Raspberry · Bash:**
+
+```bash
+mkdir -p "$HOME/spicyops-certs"
+```
+
+**Windows · PowerShell**, desde la carpeta donde se descargó la CA por WinBox:
+
+```powershell
+Get-FileHash -Algorithm SHA256 .\spicyops-ca.crt
+scp -P 22 .\spicyops-ca.crt operador@100.70.10.1:/home/operador/spicyops-certs/spicyops-ca.crt
+```
+
+**Raspberry · Bash:**
+
+```bash
+sha256sum "$HOME/spicyops-certs/spicyops-ca.crt"
+openssl x509 -in "$HOME/spicyops-certs/spicyops-ca.crt" -noout -subject -issuer -dates -fingerprint -sha256
+ip route get 192.168.88.1
+openssl s_client -connect 192.168.88.1:8729 -CAfile "$HOME/spicyops-certs/spicyops-ca.crt" -verify_ip 192.168.88.1 -verify_return_error < /dev/null
+```
+
+Comparar hashes en ambos equipos: verifica la copia, no sustituye la confianza del canal de obtención de CA. Revisar la dirección de origen LAN de la ruta.
+
+Resultado esperado: cadena válida e IP verificada, normalmente `Verify return code: 0 (ok)`. Aún no se ha probado login API. Si falla, corregir CA, SAN, vigencia, reloj, certificado asignado o acceso de red.
+
+Prueba equivalente con el Python configurado:
+
+```bash
+"$HOME/spicyops-venv/bin/python" - <<'PY'
+import os
+import socket
+import ssl
+
+ip = "192.168.88.1"
+ctx = ssl.create_default_context(
+    cafile=os.path.expanduser("~/spicyops-certs/spicyops-ca.crt")
+)
+ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+with socket.create_connection((ip, 8729), timeout=8) as sock:
+    with ctx.wrap_socket(sock, server_hostname=ip) as tls:
+        print("TLS e identidad IP verificados:", tls.version())
+PY
+```
+
+Fuente: [SSL de Python](https://docs.python.org/3.11/library/ssl.html). Mantener el criterio del lector: nunca `CERT_NONE`, desactivar `check_hostname` o ignorar el certificado.
+
+## 15. Paso 10 — Login y lecturas API
+
+La comprobación preferente es **Diagnosticar en SpicyOps**, tras completar el perfil del paso siguiente. Como opción avanzada, ofrecer descarga de este script para guardarlo **localmente en Raspberry** como `~/spicyops-check-api.py`.
+
+No pasarlo por stdin: necesita una terminal interactiva para pedir la contraseña. No mostrar inventario ni guardar secretos.
+
+```python
+from functools import partial
+from getpass import getpass
+from pathlib import Path
+import ssl
+from librouteros import connect
+
+ip = "192.168.88.1"
+ctx = ssl.create_default_context(
+    cafile=str(Path.home() / "spicyops-certs" / "spicyops-ca.crt")
+)
+ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+api = connect(
+    host=ip,
+    port=8729,
+    username="spicyops-reader",
+    password=getpass("Contraseña API (no se muestra): "),
+    ssl_wrapper=partial(ctx.wrap_socket, server_hostname=ip),
+    timeout=8,
+)
+try:
+    for path, properties in [
+        ("/system/identity/print", "name"),
+        ("/system/resource/print", "uptime,version,board-name"),
+        ("/queue/simple/print", ".id,name,target,bytes"),
+        ("/ip/firewall/address-list/print", ".id,list,address,disabled"),
+    ]:
+        count = sum(1 for _ in api(path, **{".proplist": properties}))
+        print(path, "OK; registros:", count)
+finally:
+    api.close()
+```
+
+Ejecutar desde terminal interactiva de Raspberry:
+
+```bash
+"$HOME/spicyops-venv/bin/python" "$HOME/spicyops-check-api.py"
+```
+
+Solo consulta e imprime cantidades. La última ruta cuenta todas las entradas de address-list, no únicamente Morosos. No confundirlo con cantidad de clientes suspendidos.
+
+Cero colas o Morosos vacío puede ser válido. No crear colas/clientes de prueba en producción para llenar pantallas. El agente debe verificar contrato de biblioteca y sintaxis; una revisión de código no acredita prueba física.
+
+## 16. Paso 11 — Completar SpicyOps
+
+Extraer el paquete Windows completo, conservando `_internal` junto a `SpicyOps.exe`. Abrir **Conexiones → Nueva localidad**.
+
+| Campo real | Qué introducir |
+| --- | --- |
+| Nombre de la localidad | Nombre elegido por el operador |
+| Dirección de la Raspberry | `100.70.10.1` o nombre Tailscale autorizado |
+| Puerto SSH | `22`, salvo configuración distinta |
+| Usuario de Raspberry | `operador` o cuenta existente |
+| Autenticación SSH | Contraseña o Clave SSH de Windows |
+| Contraseña o frase de clave | Solo en SpicyOps |
+| Archivo de clave privada en Windows | Ruta local si se usa; no la clave de host de Raspberry |
+| IP del MikroTik | `192.168.88.1`; explícita para evitar otra puerta de enlace |
+| Usuario API del MikroTik | `spicyops-reader` |
+| Contraseña API del MikroTik | Solo en SpicyOps |
+| Certificado CA en Raspberry | `/home/operador/spicyops-certs/spicyops-ca.crt` |
+| Python con librouteros en Raspberry | `/home/operador/spicyops-venv/bin/python` |
+
+Las rutas CA/Python son de Raspberry; la clave privada SSH es de Windows. Completar el campo CA no transfiere archivos.
+
+Comparar y confirmar huella SSH desde fuente confiable. Conectar y revisar resultado. Diagnosticar separa acceso, identidad SSH, autenticación, lector, TLS y API; no actualiza Clientes/Analytics ni modifica la red.
+
+Sincronizar y revisar colas individuales en Clientes y fecha en Analytics. Las diferencias observadas necesitan intervalos válidos. Las aproximaciones por uptime no son consumo mensual medido.
+
+La actualización automática es opcional y empieza desactivada. Requiere SpicyOps ejecutándose en Windows; una PC apagada no lee. No describirla como servicio instalado en Raspberry.
+
+## 17. Morosos — Módulo avanzado opcional
+
+No es requisito de conexión. El recorrido principal termina en lectura.
+
+Si el propietario decide permitir suspensión/reactivación, el administrador puede preparar otra cuenta. Plantilla con clave local pendiente:
+
+```routeros
+/user group add name=spicyops-control policy=read,write,api
+/user add name=spicyops-control group=spicyops-control address=192.168.88.90/32 password="<CLAVE_UNICA_LOCAL>"
+```
+
+`write` permite operaciones más amplias en RouterOS que las que usa SpicyOps. El grupo no restringe por sí mismo a la lista Morosos: el programa aplica su límite de acciones. No atribuir aislamiento de permisos por ruta.
+
+Consulta:
+
+```routeros
+/ip firewall address-list print count-only where list=Morosos
+```
+
+No añadir reglas universales de corte, modificar FastTrack o probar suspensión con clientes. Morosos necesita un firewall previamente preparado/revisado según topología, IPv6 y sesiones existentes.
+
+SpicyOps exige confirmación cliente/IP/localidad, valida inventario y agrega o habilita/deshabilita una entrada IPv4 individual; después vuelve a leer. No cambia planes ni corta por fecha. Un resultado incierto exige sincronizar. Pertenecer a Morosos no acredita corte físico.
+
+## 18. Solución de errores
+
+| Síntoma | Revisar | Evitar |
+| --- | --- | --- |
+| Tailscale no instala | SO, arquitectura y paquetes oficiales | Binarios ARM al azar |
+| Raspberry no aparece | Login, aprobación, tailscaled | Abrir SSH en WAN |
+| VPN responde, TCP 22 no | Grant, OpenSSH, puerto, firewall Linux | Confundir ping con SSH |
+| Autenticación SSH falla | Cuenta Linux o clave autorizada | Usar contraseña API |
+| Huella cambió | Identidad por canal confiable | Aceptar/borrar automáticamente |
+| Python no inicia | python3 en PATH y ruta del venv | Python Windows |
+| Falta librouteros | Importar con el ejecutable configurado | Instalar en otro entorno |
+| CA no encontrada | Archivo legible y ruta Raspberry | Ruta Windows |
+| API timeout/refused | IP LAN, 8729, origen y firewall | API sin TLS |
+| CA no confiable | Cadena y CA correctas | Desactivar validación |
+| IP mismatch | SAN IP igual al destino | Cambiar solo common-name |
+| Certificado vencido | Vigencia y relojes | Ignorar el error |
+| Login API rechazado | Usuario, clave, grupo y origen | Permisos full |
+| Conecta, cero clientes | Colas individuales y exclusiones | Inventar clientes |
+| Sin gráfica histórica | Lecturas válidas, intervalos y resets | Inventar continuidad |
+| Morosos rechaza | Cuenta de lectura o caso ambiguo | Reintentar sin sincronizar |
+| Antes funcionaba | IP LAN de Raspberry cambió | Ampliar acceso a toda la red |
+
+Enlazar cada error a su etapa e incluir resumen imprimible de qué dato pertenece a cada equipo.
+
+## 19. Mantenimiento y localidades
+
+Cada Raspberry necesita acceso Tailscale, intérprete/CA y perfil propio. Cada router requiere preparación acorde a su localidad. No anunciar subredes de clientes para esta arquitectura.
+
+Recordar vigencia de certificados, reautenticación Tailscale según política, IP LAN estable y respaldo portable cifrado de SpicyOps. No desactivar expiración ni controles automáticamente. La web no accede a la tailnet ni al estado privado de la aplicación.
+
+## 20. Implementación y aceptación del agente
+
+1. Crear proyecto separado y contenido estructurado por etapas.
+2. Componente de comandos con equipo, lenguaje, copia y marcadores pendientes.
+3. Tokens visuales, diagramas originales y composición móvil/escritorio.
+4. Recorrido completo en primera entrega, sin capítulos “próximamente”.
+5. Revisar recetas contra fuentes oficiales para versiones elegidas y conservar enlaces/fecha.
+6. Comprobar sintaxis Python, copia, búsqueda, enlaces, anclas, impresión y progreso.
+7. Verificar 360, 430, 768, 1024 y 1440 px, zoom 200%, teclado, movimiento reducido y contraste normal mínimo 4.5:1.
+8. Comprobar que no se envían datos del configurador ni existen ejecución remota o captura de secretos.
+9. Conservar archivos ajenos. En este repositorio respetar AGENTS.md; no leer `config-mikro/` o `config-antenasyclientes/`.
+10. Entregar fuentes, instrucciones reales de arranque/build, capturas escritorio/móvil, verificaciones y pendientes. Publicación requiere autorización aparte.
+
+El visitante debe poder instalar Tailscale en ambos extremos, entrar por SSH, preparar Python, configurar CA/certificado/cuenta/API-SSL, entender el firewall, transferir CA pública, verificar TLS y llenar los campos reales de SpicyOps. Debe distinguir lectura básica de Morosos opcional.
+
+**Estado de esta especificación:** contrastada con documentación oficial y código del formulario/conector. No se instalaron paquetes ni se ejecutaron cambios en Raspberry, Tailscale o MikroTik durante su redacción. Las recetas no acreditan pruebas físicas de conexión, firewall o compatibilidad de cada equipo. El agente debe conservar esa distinción al entregar.
+

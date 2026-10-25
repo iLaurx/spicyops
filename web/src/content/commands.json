@@ -1,0 +1,695 @@
+[
+  {
+    "id": "tailscale-raspberry-1",
+    "stage": "tailscale-raspberry",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "cat /etc/os-release\nuname -m\npython3 --version\ndate -Is\nip -br address\nip route",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "SO compatible e internet",
+    "expected": "Servicio activo e IP Tailscale asignada.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://tailscale.com/docs/install/linux",
+      "https://pkgs.tailscale.com/stable/"
+    ]
+  },
+  {
+    "id": "tailscale-raspberry-2",
+    "stage": "tailscale-raspberry",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "sudo apt-get update\nsudo apt-get install -y curl ca-certificates\ncurl -fsSL https://tailscale.com/install.sh -o /tmp/spicyops-tailscale-install.sh\nless /tmp/spicyops-tailscale-install.sh",
+    "action": "Instalación",
+    "privileges": "sudo en los comandos indicados",
+    "prerequisites": "SO compatible e internet",
+    "expected": "Servicio activo e IP Tailscale asignada.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://tailscale.com/docs/install/linux",
+      "https://pkgs.tailscale.com/stable/"
+    ]
+  },
+  {
+    "id": "tailscale-raspberry-3",
+    "stage": "tailscale-raspberry",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "sh /tmp/spicyops-tailscale-install.sh\nsudo systemctl enable --now tailscaled\nsudo tailscale up",
+    "action": "Configuración",
+    "privileges": "sudo en los comandos indicados",
+    "prerequisites": "SO compatible e internet",
+    "expected": "Servicio activo e IP Tailscale asignada.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://tailscale.com/docs/install/linux",
+      "https://pkgs.tailscale.com/stable/"
+    ]
+  },
+  {
+    "id": "tailscale-raspberry-4",
+    "stage": "tailscale-raspberry",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "tailscale version\ntailscale ip -4\ntailscale status\nsystemctl is-active tailscaled",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "SO compatible e internet",
+    "expected": "Servicio activo e IP Tailscale asignada.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://tailscale.com/docs/install/linux",
+      "https://pkgs.tailscale.com/stable/"
+    ]
+  },
+  {
+    "id": "tailscale-windows-5",
+    "stage": "tailscale-windows",
+    "terminal": "Windows · PowerShell",
+    "language": "powershell",
+    "text": "tailscale status\ntailscale ping 100.70.10.1\nTest-NetConnection 100.70.10.1 -Port 22",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "Tailscale y política autorizada",
+    "expected": "Acceso VPN; SSH se verifica por separado.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://tailscale.com/docs/install/windows",
+      "https://tailscale.com/docs/reference/syntax/grants",
+      "https://tailscale.com/docs/reference/examples/grants"
+    ]
+  },
+  {
+    "id": "tailscale-windows-6",
+    "stage": "tailscale-windows",
+    "terminal": "Windows · PowerShell",
+    "language": "powershell",
+    "text": "& \"$env:ProgramFiles\\Tailscale\\tailscale.exe\" status",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "Tailscale y política autorizada",
+    "expected": "Acceso VPN; SSH se verifica por separado.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://tailscale.com/docs/install/windows",
+      "https://tailscale.com/docs/reference/syntax/grants",
+      "https://tailscale.com/docs/reference/examples/grants"
+    ]
+  },
+  {
+    "id": "tailscale-windows-7",
+    "stage": "tailscale-windows",
+    "terminal": "Consola Tailscale · fragmento JSON",
+    "language": "json",
+    "text": "{\n  \"src\": [\"100.70.10.2\"],\n  \"dst\": [\"100.70.10.1\"],\n  \"ip\": [\"tcp:22\"]\n}",
+    "action": "Consulta",
+    "privileges": "Administrador de tailnet",
+    "prerequisites": "Tailscale y política autorizada",
+    "expected": "Acceso VPN; SSH se verifica por separado.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": false,
+    "sources": [
+      "https://tailscale.com/docs/install/windows",
+      "https://tailscale.com/docs/reference/syntax/grants",
+      "https://tailscale.com/docs/reference/examples/grants"
+    ]
+  },
+  {
+    "id": "raspberry-ssh-8",
+    "stage": "raspberry-ssh",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "sudo apt-get install -y openssh-server\nsudo systemctl enable --now ssh\nsystemctl is-active ssh\nsudo sshd -t\nss -ltn 'sport = :22'",
+    "action": "Instalación",
+    "privileges": "sudo en los comandos indicados",
+    "prerequisites": "Consola confiable para comparar huella",
+    "expected": "Servicio SSH activo e identidad coincidente.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://www.raspberrypi.com/documentation/computers/remote-access.html"
+    ]
+  },
+  {
+    "id": "raspberry-ssh-9",
+    "stage": "raspberry-ssh",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "sudo ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256\nsudo ssh-keygen -lf /etc/ssh/ssh_host_ecdsa_key.pub -E sha256\nsudo ssh-keygen -lf /etc/ssh/ssh_host_rsa_key.pub -E sha256",
+    "action": "Configuración",
+    "privileges": "sudo en los comandos indicados",
+    "prerequisites": "Consola confiable para comparar huella",
+    "expected": "Servicio SSH activo e identidad coincidente.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://www.raspberrypi.com/documentation/computers/remote-access.html"
+    ]
+  },
+  {
+    "id": "raspberry-ssh-10",
+    "stage": "raspberry-ssh",
+    "terminal": "Windows · PowerShell",
+    "language": "powershell",
+    "text": "ssh -p 22 operador@100.70.10.1",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "Consola confiable para comparar huella",
+    "expected": "Servicio SSH activo e identidad coincidente.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://www.raspberrypi.com/documentation/computers/remote-access.html"
+    ]
+  },
+  {
+    "id": "raspberry-python-11",
+    "stage": "raspberry-python",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "sudo apt-get install -y python3 python3-venv openssl\npython3 --version\npython3 -m venv \"$HOME/spicyops-venv\"\n\"$HOME/spicyops-venv/bin/python\" -m pip install \"librouteros==4.2.2\"\n\"$HOME/spicyops-venv/bin/python\" -m pip check\n\"$HOME/spicyops-venv/bin/python\" -c \"import ssl, librouteros; from importlib.metadata import version; print(version('librouteros')); print(ssl.OPENSSL_VERSION)\"\nprintf '%s\\n' \"$HOME/spicyops-venv/bin/python\"",
+    "action": "Instalación",
+    "privileges": "sudo en los comandos indicados",
+    "prerequisites": "Python 3.11 compatible",
+    "expected": "Importación de librouteros desde el venv.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://pypi.org/project/librouteros/4.2.2/",
+      "https://librouteros.readthedocs.io/en/latest/connect.html"
+    ]
+  },
+  {
+    "id": "mikrotik-inventario-12",
+    "stage": "mikrotik-inventario",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/system resource print\n/system clock print\n/ip address print\n/ip service print detail where name=api-ssl\n/certificate print detail\n/user group print\n/ip firewall filter print detail where chain=input\n/ip firewall raw print\n/queue simple print count-only",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "Sesión administrativa confiable",
+    "expected": "Estado previo de API, colas y certificados.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": []
+  },
+  {
+    "id": "mikrotik-certificados-13",
+    "stage": "mikrotik-certificados",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/certificate add name=spicyops-ca-template common-name=SpicyOps-Local-CA key-size=2048 days-valid=1825 key-usage=key-cert-sign,crl-sign\n/certificate sign spicyops-ca-template name=spicyops-ca\n/certificate set [find where name=\"spicyops-ca\"] trusted=yes",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "Preparación nueva; revisa nombres existentes",
+    "expected": "CA pública y servidor con SAN de IP válido.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://manual.mikrotik.com/docs/authentication-authorization-accounting/certificates/",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/2555969/Certificates"
+    ]
+  },
+  {
+    "id": "mikrotik-certificados-14",
+    "stage": "mikrotik-certificados",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/certificate add name=spicyops-api-template common-name=SpicyOps-API subject-alt-name=IP:192.168.88.1 key-size=2048 days-valid=365 key-usage=digital-signature,key-encipherment,tls-server\n/certificate sign spicyops-api-template ca=spicyops-ca name=spicyops-api\n/certificate print detail where name=spicyops-api",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "Preparación nueva; revisa nombres existentes",
+    "expected": "CA pública y servidor con SAN de IP válido.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://manual.mikrotik.com/docs/authentication-authorization-accounting/certificates/",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/2555969/Certificates"
+    ]
+  },
+  {
+    "id": "mikrotik-certificados-15",
+    "stage": "mikrotik-certificados",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/certificate export-certificate spicyops-ca type=pem file-name=spicyops-ca\n/file print where name~\"spicyops-ca\"",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "Preparación nueva; revisa nombres existentes",
+    "expected": "CA pública y servidor con SAN de IP válido.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://manual.mikrotik.com/docs/authentication-authorization-accounting/certificates/",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/2555969/Certificates"
+    ]
+  },
+  {
+    "id": "mikrotik-api-16",
+    "stage": "mikrotik-api",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/user group add name=spicyops-read policy=read,api\n/user add name=spicyops-agent group=spicyops-read address=192.168.88.90/32 disabled=yes comment=\"SpicyOps API desde Raspberry\"",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "CA/servidor preparados; elige permisos",
+    "expected": "API-SSL 8729, origen LAN y grupo correcto.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/103841820/Services",
+      "https://manual.mikrotik.com/docs/developer-guides/api/"
+    ]
+  },
+  {
+    "id": "mikrotik-api-17",
+    "stage": "mikrotik-api",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/user group add name=spicyops-control policy=read,write,api\n/user add name=spicyops-agent group=spicyops-control address=192.168.88.90/32 disabled=yes comment=\"SpicyOps API desde Raspberry\"",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "CA/servidor preparados; elige permisos",
+    "expected": "API-SSL 8729, origen LAN y grupo correcto.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/103841820/Services",
+      "https://manual.mikrotik.com/docs/developer-guides/api/"
+    ]
+  },
+  {
+    "id": "mikrotik-api-18",
+    "stage": "mikrotik-api",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/user set [find where name=\"spicyops-agent\"] password=\"<CLAVE_UNICA_LOCAL>\"\n/user enable [find where name=\"spicyops-agent\"]",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "CA/servidor preparados; elige permisos",
+    "expected": "API-SSL 8729, origen LAN y grupo correcto.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [
+      "<CLAVE_UNICA_LOCAL>"
+    ],
+    "canCopy": false,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/103841820/Services",
+      "https://manual.mikrotik.com/docs/developer-guides/api/"
+    ]
+  },
+  {
+    "id": "mikrotik-api-19",
+    "stage": "mikrotik-api",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/user print detail where name=\"spicyops-agent\"\n/user group print detail where name~\"^spicyops-(read|control)$\"",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "CA/servidor preparados; elige permisos",
+    "expected": "API-SSL 8729, origen LAN y grupo correcto.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/103841820/Services",
+      "https://manual.mikrotik.com/docs/developer-guides/api/"
+    ]
+  },
+  {
+    "id": "mikrotik-api-20",
+    "stage": "mikrotik-api",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/ip service set [find where name=\"api-ssl\"] disabled=no port=8729 certificate=spicyops-api address=192.168.88.90/32 tls-version=only-1.2",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "CA/servidor preparados; elige permisos",
+    "expected": "API-SSL 8729, origen LAN y grupo correcto.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/103841820/Services",
+      "https://manual.mikrotik.com/docs/developer-guides/api/"
+    ]
+  },
+  {
+    "id": "mikrotik-api-21",
+    "stage": "mikrotik-api",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/ip service disable [find where name=\"api\"]\n/ip service print detail where name~\"^api\"",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "CA/servidor preparados; elige permisos",
+    "expected": "API-SSL 8729, origen LAN y grupo correcto.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/103841820/Services",
+      "https://manual.mikrotik.com/docs/developer-guides/api/"
+    ]
+  },
+  {
+    "id": "mikrotik-firewall-22",
+    "stage": "mikrotik-firewall",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/ip firewall filter add chain=input action=accept protocol=tcp src-address=192.168.88.90/32 dst-address=192.168.88.1 dst-port=8729 place-before=<ID_REGLA_INPUT_QUE_BLOQUEA> comment=\"SpicyOps API-SSL desde Raspberry\"",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "Revisar input y raw sin reemplazar reglas",
+    "expected": "Solo Raspberry llega al puerto necesario.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [
+      "<ID_REGLA_INPUT_QUE_BLOQUEA>"
+    ],
+    "canCopy": false,
+    "sources": [
+      "https://manual.mikrotik.com/docs/getting-started/securing-your-router/"
+    ]
+  },
+  {
+    "id": "mikrotik-firewall-23",
+    "stage": "mikrotik-firewall",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/ip firewall filter print stats where comment=\"SpicyOps API-SSL desde Raspberry\"",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "Revisar input y raw sin reemplazar reglas",
+    "expected": "Solo Raspberry llega al puerto necesario.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://manual.mikrotik.com/docs/getting-started/securing-your-router/"
+    ]
+  },
+  {
+    "id": "validar-tls-24",
+    "stage": "validar-tls",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "mkdir -p \"$HOME/spicyops-certs\"",
+    "action": "Configuración",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "CA obtenida por canal confiable",
+    "expected": "Cadena e identidad IP verificadas; aún sin login API.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://docs.python.org/3.11/library/ssl.html"
+    ]
+  },
+  {
+    "id": "validar-tls-25",
+    "stage": "validar-tls",
+    "terminal": "Windows · PowerShell",
+    "language": "powershell",
+    "text": "Get-FileHash -Algorithm SHA256 .\\spicyops-ca.crt\nscp -P 22 .\\spicyops-ca.crt operador@100.70.10.1:/home/operador/spicyops-certs/spicyops-ca.crt",
+    "action": "Configuración",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "CA obtenida por canal confiable",
+    "expected": "Cadena e identidad IP verificadas; aún sin login API.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://docs.python.org/3.11/library/ssl.html"
+    ]
+  },
+  {
+    "id": "validar-tls-26",
+    "stage": "validar-tls",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "sha256sum \"$HOME/spicyops-certs/spicyops-ca.crt\"\nopenssl x509 -in \"$HOME/spicyops-certs/spicyops-ca.crt\" -noout -subject -issuer -dates -fingerprint -sha256\nip route get 192.168.88.1\nopenssl s_client -connect 192.168.88.1:8729 -CAfile \"$HOME/spicyops-certs/spicyops-ca.crt\" -verify_ip 192.168.88.1 -verify_return_error < /dev/null",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "CA obtenida por canal confiable",
+    "expected": "Cadena e identidad IP verificadas; aún sin login API.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://docs.python.org/3.11/library/ssl.html"
+    ]
+  },
+  {
+    "id": "lecturas-api-27",
+    "stage": "lecturas-api",
+    "terminal": "Raspberry · Python",
+    "language": "python",
+    "text": "from functools import partial\nfrom getpass import getpass\nfrom pathlib import Path\nimport ssl\nimport sys\nfrom librouteros import connect\n\nif not sys.stdin.isatty():\n    raise SystemExit(\"Ejecuta este archivo desde una terminal interactiva.\")\n\nip = \"192.168.88.1\"\nctx = ssl.create_default_context(\n    cafile=str(Path.home() / \"spicyops-certs\" / \"spicyops-ca.crt\")\n)\nctx.minimum_version = ssl.TLSVersion.TLSv1_2\napi = connect(\n    host=ip,\n    port=8729,\n    username=\"spicyops-agent\",\n    password=getpass(\"Contraseña API (no se muestra): \"),\n    ssl_wrapper=partial(ctx.wrap_socket, server_hostname=ip),\n    timeout=8,\n)\ntry:\n    for path, properties in [\n        (\"/system/identity/print\", \"name\"),\n        (\"/system/resource/print\", \"uptime,version,board-name\"),\n        (\"/queue/simple/print\", \".id,name,target,bytes\"),\n        (\"/ip/firewall/address-list/print\", \".id,list,address,disabled\"),\n    ]:\n        count = sum(1 for _ in api(path, **{\".proplist\": properties}))\n        print(path, \"OK; registros:\", count)\nfinally:\n    api.close()",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "TLS válido y cuenta API",
+    "expected": "Login y cantidades; no acredita escritura ni corte.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": []
+  },
+  {
+    "id": "lecturas-api-28",
+    "stage": "lecturas-api",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "\"$HOME/spicyops-venv/bin/python\" \"$HOME/spicyops-check-api.py\"",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "TLS válido y cuenta API",
+    "expected": "Login y cantidades; no acredita escritura ni corte.",
+    "errors": "#errores",
+    "mode": "both",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": []
+  },
+  {
+    "id": "modo-escritura-29",
+    "stage": "modo-escritura",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/user print detail where name=\"spicyops-agent\"",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "Cuenta dedicada y política Morosos revisada",
+    "expected": "Permisos y estado leído; efecto físico por verificar.",
+    "errors": "#errores",
+    "mode": "control",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/48660574/Filter",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/130220087/Connection%2Btracking"
+    ]
+  },
+  {
+    "id": "modo-escritura-30",
+    "stage": "modo-escritura",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/user group set [find where name=\"spicyops-read\"] policy=read,write,api\n/user group print detail where name=\"spicyops-read\"",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "Cuenta dedicada y política Morosos revisada",
+    "expected": "Permisos y estado leído; efecto físico por verificar.",
+    "errors": "#errores",
+    "mode": "control",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/48660574/Filter",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/130220087/Connection%2Btracking"
+    ]
+  },
+  {
+    "id": "modo-escritura-31",
+    "stage": "modo-escritura",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/user group set [find where name=\"spicyops-read\"] policy=read,api,!write\n/user group print detail where name=\"spicyops-read\"",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "Cuenta dedicada y política Morosos revisada",
+    "expected": "Permisos y estado leído; efecto físico por verificar.",
+    "errors": "#errores",
+    "mode": "control",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/48660574/Filter",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/130220087/Connection%2Btracking"
+    ]
+  },
+  {
+    "id": "modo-escritura-32",
+    "stage": "modo-escritura",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/ip firewall address-list print detail where list=\"Morosos\"\n/ip firewall filter print detail where chain=forward",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "Cuenta dedicada y política Morosos revisada",
+    "expected": "Permisos y estado leído; efecto físico por verificar.",
+    "errors": "#errores",
+    "mode": "control",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/48660574/Filter",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/130220087/Connection%2Btracking"
+    ]
+  },
+  {
+    "id": "modo-escritura-33",
+    "stage": "modo-escritura",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/ip firewall filter add chain=forward action=drop src-address-list=Morosos out-interface=<INTERFAZ_WAN_REAL> disabled=yes place-before=<ID_REGLA_FORWARD_A_REVISAR> comment=\"SpicyOps politica Morosos pendiente de revision\"",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "Cuenta dedicada y política Morosos revisada",
+    "expected": "Permisos y estado leído; efecto físico por verificar.",
+    "errors": "#errores",
+    "mode": "control",
+    "pendingMarkers": [
+      "<INTERFAZ_WAN_REAL>",
+      "<ID_REGLA_FORWARD_A_REVISAR>"
+    ],
+    "canCopy": false,
+    "sources": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/8978504/User",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/48660574/Filter",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/130220087/Connection%2Btracking"
+    ]
+  },
+  {
+    "id": "administracion-avanzada-34",
+    "stage": "administracion-avanzada",
+    "terminal": "Raspberry · Bash",
+    "language": "bash",
+    "text": "printf 'net.ipv4.ip_forward = 1\\nnet.ipv6.conf.all.forwarding = 1\\n' | sudo tee /etc/sysctl.d/99-spicyops-tailscale.conf\nsudo sysctl -p /etc/sysctl.d/99-spicyops-tailscale.conf\nsudo tailscale set --advertise-routes=192.168.88.0/24",
+    "action": "Configuración",
+    "privileges": "sudo en los comandos indicados",
+    "prerequisites": "Preparación de la localidad",
+    "expected": "Revisa los límites de cada comprobación.",
+    "errors": "#errores",
+    "mode": "optional",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://tailscale.com/docs/features/subnet-routers",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/328155/Configuration%2BManagement",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/40992852/Backup"
+    ]
+  },
+  {
+    "id": "administracion-avanzada-35",
+    "stage": "administracion-avanzada",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/export file=antes-spicyops\n/file print where name~\"antes-spicyops\"",
+    "action": "Configuración",
+    "privileges": "Administrador autorizado",
+    "prerequisites": "Preparación de la localidad",
+    "expected": "Revisa los límites de cada comprobación.",
+    "errors": "#errores",
+    "mode": "optional",
+    "pendingMarkers": [],
+    "canCopy": true,
+    "sources": [
+      "https://tailscale.com/docs/features/subnet-routers",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/328155/Configuration%2BManagement",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/40992852/Backup"
+    ]
+  },
+  {
+    "id": "administracion-avanzada-36",
+    "stage": "administracion-avanzada",
+    "terminal": "MikroTik · RouterOS",
+    "language": "routeros",
+    "text": "/system backup save name=antes-spicyops password=\"<CLAVE_RESPALDO_LOCAL>\"",
+    "action": "Consulta",
+    "privileges": "Cuenta autorizada",
+    "prerequisites": "Preparación de la localidad",
+    "expected": "Revisa los límites de cada comprobación.",
+    "errors": "#errores",
+    "mode": "optional",
+    "pendingMarkers": [
+      "<CLAVE_RESPALDO_LOCAL>"
+    ],
+    "canCopy": false,
+    "sources": [
+      "https://tailscale.com/docs/features/subnet-routers",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/328155/Configuration%2BManagement",
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/40992852/Backup"
+    ]
+  }
+]

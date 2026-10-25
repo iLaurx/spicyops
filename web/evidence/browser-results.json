@@ -1,0 +1,29 @@
+{
+  "base": "http://127.0.0.1:4174/",
+  "widths": [
+    360,
+    430,
+    768,
+    1024,
+    1440
+  ],
+  "reflow200": true,
+  "errors": [],
+  "statuses": [],
+  "externalRequests": 0,
+  "checks": [
+    "search",
+    "anchors reload",
+    "progress opt-in/reset",
+    "config injection rejection",
+    "config substitution",
+    "script download consistency",
+    "copy exact",
+    "marker blocking",
+    "mobile previous/next",
+    "print all sections",
+    "keyboard skip link",
+    "reduced motion",
+    "local fonts/downloads"
+  ]
+}

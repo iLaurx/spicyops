@@ -1,4 +1,4 @@
-"""Avisos desde metadatos y licencias instalados; sin atribuir licencia propia."""
+"""Avisos desde metadatos y licencias instalados; conserva licencias de terceros."""
 from pathlib import Path
 import importlib.metadata as metadata
 import sys
@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 folder = ROOT/'build'/'release-notices'
 folder.mkdir(parents=True, exist_ok=True)
 excluded = {'pip', 'setuptools', 'psycopg', 'psycopg-binary', 'librouteros'}
-lines = ['SpicyOps: licencia propia, titular y soporte pendientes de decisión del propietario.',
+lines = ['SpicyOps se distribuye bajo la licencia MIT; consultar LICENSE.',
          'Dependencias sin modificaciones. Este inventario usa los metadatos instalados.',
          'Se incluyen textos originales en licenses/ y fuentes LGPL instaladas en LGPL-sources.zip.',
          'librouteros se usa en la Raspberry existente; no se distribuye en el EXE.',
@@ -35,7 +35,7 @@ lines += ['', 'Fuentes/proyectos oficiales:', 'https://github.com/paramiko/param
           'https://docs.python.org/3/license.html',
           'PyInstaller: GPL con excepción del bootloader; no sustituye licencias de dependencias.',
           'Paramiko declara LGPL-2.1; pystray declara LGPLv3 en metadatos.',
-          'Revisar condiciones de redistribución con el propietario antes de publicar; no se ha decidido licencia propia.']
+          'Los componentes de terceros conservan sus propias licencias y condiciones de redistribución.']
 text = '\n'.join(lines)+'\n'
 text += ('\nTipografías locales (SIL Open Font License 1.1): Barlow, Barlow Semi Condensed y JetBrains Mono.\n'
          'Procedencia: https://github.com/google/fonts/tree/main/ofl/\n'

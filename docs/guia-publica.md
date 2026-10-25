@@ -45,4 +45,6 @@ Datos privados en `%LOCALAPPDATA%/SpicyOps`: conexiones cifradas, hasta 1440 mue
 
 Un solo archivo cifrado se lee/cifra bajo bloqueo. Historias grandes aumentan latencia, memoria y espacio. Un respaldo conserva el estado anterior y no garantiza recuperar el último cambio ni detectar una corrupción ocurrida antes de la primera copia. Se necesita espacio adicional para originales durante restauraciones. Una pérdida de alimentación durante una sustitución de clave en recuperación puede requerir recuperar los originales; ningún formato cifra de forma recuperable sin clave.
 
-Pendientes: piloto real Raspberry/MikroTik y firewall, certificado de firma, decisión del propietario sobre licencia propia, titular y canal de soporte. Instalación y actualización en Windows limpio están excluidas expresamente por el usuario. Revisión visual del menú nativo y comportamiento tras suspensión real requieren aceptación manual. No hay telemetría de soporte, cobros ni suspensión automática.
+SpicyOps se distribuye bajo la licencia MIT incluida en LICENSE. Los componentes de terceros conservan sus propias licencias.
+
+Pendientes: piloto real Raspberry/MikroTik y firewall, certificado de firma y canal de soporte. Instalación y actualización en Windows limpio están excluidas expresamente por el usuario. Revisión visual del menú nativo y comportamiento tras suspensión real requieren aceptación manual. No hay telemetría de soporte, cobros ni suspensión automática.

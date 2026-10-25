@@ -1,0 +1,43 @@
+name: Guía SpicyOps — publicación manual
+on:
+  workflow_dispatch:
+    inputs:
+      site_base:
+        description: 'Base del sitio: / para dominio propio o /nombre-repositorio/ para proyecto'
+        required: true
+        type: string
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: spicyops-pages
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - uses: actions/configure-pages@v5
+      - run: npm ci
+        working-directory: web
+      - run: npm run build
+        working-directory: web
+        env:
+          SITE_BASE: ${{ inputs.site_base }}
+      - run: npm test
+        working-directory: web
+      - uses: actions/upload-pages-artifact@v5.0.0
+        with:
+          path: web/dist
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@v5.0.1
