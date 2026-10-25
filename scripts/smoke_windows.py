@@ -49,10 +49,10 @@ def main():
         process=None
         try:
             process,runtime,opener,page=start(exe,state)
-            assert 'Conectar mi primera localidad' in page
+            assert 'Nueva localidad' in page
             assert 'Marina' not in page
             base=f'http://127.0.0.1:{runtime["port"]}'
-            for path,needle in [('/clientes/','Sin clientes'),('/conexiones/','Sin localidades'),
+            for path,needle in [('/clientes/','Sin clientes'),('/conexiones/','Conecta tu primera localidad'),
                 ('/conexiones/nueva/','ACCESO A RASPBERRY'),('/static/portal/app.css','.sidebar')]:
                 assert needle in opener.open(base+path,timeout=5).read().decode(),path
             try:opener.open(base+'/open/forged/',timeout=5)

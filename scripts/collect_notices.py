@@ -37,6 +37,13 @@ lines += ['', 'Fuentes/proyectos oficiales:', 'https://github.com/paramiko/param
           'Paramiko declara LGPL-2.1; pystray declara LGPLv3 en metadatos.',
           'Revisar condiciones de redistribución con el propietario antes de publicar; no se ha decidido licencia propia.']
 text = '\n'.join(lines)+'\n'
+text += ('\nTipografías locales (SIL Open Font License 1.1): Barlow, Barlow Semi Condensed y JetBrains Mono.\n'
+         'Procedencia: https://github.com/google/fonts/tree/main/ofl/\n'
+         'Textos de licencia incluidos en portal/static/portal/fonts/*-OFL.txt.\n')
+for source in (ROOT/'portal/static/portal/fonts').glob('*-OFL.txt'):
+    target = folder/'licenses'/'fonts'/source.name
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(source, target)
 (ROOT/'docs'/'THIRD-PARTY-NOTICES.txt').write_text(text, encoding='utf-8')
 with zipfile.ZipFile(folder/'LGPL-sources.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
     for name in ('paramiko', 'pystray'):

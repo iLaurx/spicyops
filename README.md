@@ -1,95 +1,282 @@
-# SpicyOps 1.0.0 para Windows
+# SpicyOps para Windows
 
-Distribución oficial local: **`dist/SpicyOps-1.0.0-Windows/SpicyOps/SpicyOps.exe`**. ZIP: **`dist/SpicyOps-1.0.0-Windows/SpicyOps-1.0.0-Windows.zip`**. Extrae todo y conserva `_internal`. Paquete sin firma digital, preparado localmente; sin publicación remota. Las distribuciones anteriores se conservan como históricas.
+SpicyOps permite consultar y administrar los servicios de varias localidades con redes MikroTik desde una PC con Windows. Se conecta por SSH a la Raspberry de cada localidad y, desde ella, consulta el router mediante API-SSL.
 
-[Guía pública](docs/guia-publica.md) · [Notas de versión](docs/release-1.0.0.md) · [Checklist](docs/checklist-release.md) · [Verificación final](docs/verificacion-release-1.0.0.md) · [Piloto pendiente](docs/aceptacion-piloto.md).
+Los clientes se detectan automáticamente a partir de las colas simples individuales del MikroTik. Las conexiones, lecturas y notas se guardan en el equipo para continuar trabajando al volver a abrir el programa.
 
-Recuperación y respaldo portable cifrado con contraseña desde **Respaldos** en el pie. El estado dañado o una clave no accesible abren recuperación; no se borran originales.
+**Versión 1.0.0 · Interfaz en español · Analytics, Clientes y Conexiones**
 
-## Usar el programa
+## Funciones principales
 
-Abrir `dist/SpicyOps-1.0.0-Windows/SpicyOps/SpicyOps.exe`. Es una distribución portable: conservar la carpeta `_internal` junto al ejecutable. No necesita instalar Python, PostgreSQL, Docker ni crear una base de datos. La interfaz utiliza un tema oscuro en Analytics, Clientes y Conexiones, incluidos formularios y ventanas de datos. En Clientes, cada cliente se identifica visualmente con un icono vectorial de usuario. Las localidades y Conexiones muestran un punto verde con **Activa**, ámbar con **Error de conexión** o gris con **Desconectada**. El estado refleja la última operación y no caduca por la antigüedad de la lectura; su fecha se muestra por separado. La ventana usa Microsoft Edge; si no está disponible, se abre el navegador predeterminado. El icono de SpicyOps en la bandeja permite reabrir la ventana o salir.
+- Administrar varias localidades con accesos y datos independientes.
+- Consultar clientes, direcciones IP, planes y contadores de consumo.
+- Guardar nombre visible, contacto, ubicación y notas por cliente.
+- Ver consumo observado entre lecturas y estimaciones a 24 horas y 30 días.
+- Actualizar lecturas manualmente o de forma automática.
+- Diagnosticar problemas de conexión por etapas.
+- Suspender o reactivar una IPv4 individual mediante la lista `Morosos`, con confirmación.
+- Crear respaldos cifrados, recuperar datos y trasladarlos a otra PC.
 
-1. **Conexiones → Nueva localidad**: dirección de Raspberry por red local/Tailscale, puerto y usuario SSH; contraseña o clave SSH de Windows. Completar acceso API-SSL de lectura y certificado CA del MikroTik. Confirmar la huella SSH del equipo.
-2. Al conectar, comprobar Raspberry y MikroTik e importar automáticamente las colas individuales. Conectar y sincronizar solo leen; no se instalan servicios en Raspberry.
-3. El selector superior incluye **Todos**: abre Clientes con los servicios de todas las localidades activas (conectadas), usando su última lectura guardada e indicando localidad y fecha por fila. Las desconectadas siguen disponibles al seleccionarlas individualmente. La búsqueda también acepta localidad; Ver datos y Suspender conservan el destino individual.
-4. **Clientes**: consultar IP, plan en Mbps (o MB/s), contadores en GB y estado de configuración. La flecha diagonal **↗ (Ver datos)** permite guardar nombre visible, contacto, ubicación y notas, independientes de lo leído en MikroTik.
-   **Revisar colas excluidas** muestra identificación, IP y motivo. **Incluir en Clientes** permite una excepción local para una cola IPv4 individual válida filtrada como infraestructura; **Revertir inclusión** restaura el filtro. Se conserva por localidad, ID, nombre de cola e IP. Un cambio de identidad/IP no hereda la excepción. No crea clientes manuales ni escribe en MikroTik; Morosos conserva su validación fresca y confirmación individual. Las lecturas antiguas sin detalle requieren sincronizar primero.
-5. **Analytics → Actualizar lectura**: consultar los contadores actuales y la gráfica de consumo observado, y la lista por cliente con estimados de 24 horas y 30 días, calculados únicamente como aproximación desde encendido. No hay selector ni proyecciones entre lecturas. Cada barra conserva fecha y hora, colores por día y el detalle de inicio y fin al pasar el cursor. En pantallas estrechas se desplaza horizontalmente.
+Cada instalación comienza sin localidades ni clientes precargados.
 
-En **Clientes → Suspender**, un interruptor compacto muestra **Sí** cuando la restricción está activa y **No** cuando está desactivada. Pulsarlo abre la confirmación para suspender o reactivar; no cambia el estado hasta confirmar y leer el resultado. La tabla adapta las filas a tarjetas en pantallas estrechas. La confirmación muestra localidad, cliente e IP. Suspender agrega la IPv4 a la lista exacta `Morosos` o habilita su entrada existente; quitar deshabilita su entrada individual, sin borrarla. El programa vuelve a leer la lista para confirmar el estado y no cambia planes, contadores, reglas ni permisos.
+## Requisitos
 
-Este control requiere una cuenta API con escritura y reglas de bloqueo de `Morosos` ya configuradas en MikroTik. Una cuenta de solo lectura permite consultar, pero rechazará cambios. Pertenecer a la lista no demuestra un corte físico: orden de reglas, FastTrack, sesiones abiertas e IPv6 pueden permitir tráfico. El control cubre la IPv4 de la cola simple, no dispositivos o servicios con otras direcciones. Las restricciones compartidas, dinámicas o duplicadas requieren revisión del administrador. Ante un resultado incierto hay que sincronizar antes de reintentar. No hay cortes automáticos por fecha ni registro de pagos.
+### En la PC
 
-Se reconocen direcciones individuales, CIDR y rangos IPv4 inclusivos. Una restricción activa compartida/dinámica aplicable o una entrada activa de Morosos que no pueda interpretarse bloquea el cambio individual. Nunca se modifican rangos, subredes ni entradas dinámicas. La misma interpretación se comprueba antes y después de escribir; una respuesta ambigua no confirma éxito.
+- Windows 10 u 11 de 64 bits.
+- Microsoft Edge o un navegador predeterminado actualizado.
+- Acceso a las Raspberry por red local o Tailscale.
+- Espacio para el programa, los datos y los respaldos.
 
-Cada instalación guarda automáticamente sus localidades y datos en `%LOCALAPPDATA%/SpicyOps`. Las credenciales se cifran y la clave del programa empaquetado se protege con DPAPI de la cuenta Windows. No hay clientes ni conexiones precargados. No se deben compartir esos archivos privados para distribuir el programa.
+El paquete incluye las dependencias de la aplicación. No necesitas instalar Python, PostgreSQL ni Docker, crear una base de datos o abrir el programa como administrador.
 
-## Actualización automática por localidad
+### En cada localidad
 
-En **Conexiones**, marca **Actualización automática**, elige **1, 5, 10, 15, 30 o 60 minutos** y pulsa **Guardar** en la localidad. Empieza desactivada, con 5 minutos seleccionados. Para pausar, desmarca y guarda; para reanudar, vuelve a marcar y guardar. La preferencia se conserva cifrada al reiniciar, junto con los accesos. Pausar conserva credenciales, lecturas y notas. Desconectar mantiene la preferencia, cancela la programación efectiva y retira las contraseñas como antes; reconectar permite retomarla.
+- Una Raspberry accesible mediante SSH con contraseña o clave.
+- Python con `librouteros` ya disponible en la Raspberry.
+- Acceso desde la Raspberry al MikroTik por API-SSL, en el puerto 8729.
+- Un certificado CA en la Raspberry para validar el certificado y el nombre del router.
+- Una cuenta API con lectura de identidad, recursos, colas simples y lista `Morosos`.
 
-Cada tarjeta muestra la última lectura exitosa, la próxima actualización y el estado: desactivada, programada, actualizando, esperando reintento o localidad desconectada. Los errores llevan fecha y conservan los últimos datos válidos. **Perfil conectado**, fecha de los datos y resultado de la última operación son señales diferentes: una lectura guardada no acredita disponibilidad actual.
+Para suspender o reactivar clientes también necesitas permisos de escritura y reglas de bloqueo de `Morosos` previamente configuradas por el administrador.
 
-La programación corre en el proceso de Windows, con un solo coordinador por instalación, aunque cierres todas las ventanas y SpicyOps siga en la bandeja. Abrir más ventanas reutiliza la misma instancia. Hay hasta dos lecturas automáticas concurrentes y una sola operación por localidad; si está ocupada, espera sin acumular ciclos. La lectura manual sigue disponible y programa el siguiente ciclo desde su finalización. Ante fallos espera 1, 2 y 4 minutos; después espacia los intentos al menos 15 minutos (o el intervalo elegido si es mayor). Al recuperarse vuelve al intervalo normal. La sincronización automática solo lee: nunca ejecuta Morosos.
+SpicyOps utiliza la configuración de red existente. La preparación de SSH, Tailscale, Python, certificados y permisos corresponde al administrador de la red.
 
-Analytics, Clientes y Conexiones incorporan los cambios sin recargar la página completa. Se conserva la consulta de búsqueda, la unidad y la posición de desplazamiento. Mientras escribes, cambias un formulario sin guardar o mantienes una confirmación abierta, la vista espera para no sustituir el borrador; al terminar incorpora la última lectura disponible.
+## Abrir SpicyOps
 
-**PC apagada o suspendida:** no se ejecutan lecturas. **SpicyOps cerrado con “Salir de SpicyOps”:** tampoco; el cierre espera que terminen las lecturas en curso y persiste sus resultados. Al abrir de nuevo solo programa localidades conectadas y habilitadas, desde el intervalo elegido y con arranque espaciado. Al volver de suspensión omite ciclos vencidos y hace como máximo una lectura pendiente por localidad, sin reconstruir el historial perdido. No instala un servicio de Windows ni en Raspberry, y no arranca por sí solo al encender la PC.
+1. Extrae el paquete completo en una carpeta de tu PC.
+2. Conserva la carpeta `_internal` junto a `SpicyOps.exe`.
+3. Abre `SpicyOps.exe`.
 
-## Desarrollo
+El programa abre una ventana de aplicación con Edge. Si Edge no está disponible, utiliza el navegador predeterminado. No lo ejecutes directamente desde el ZIP ni copies únicamente el archivo `.exe`.
 
-### Diagnóstico de conexión
+En este repositorio están disponibles estas distribuciones locales:
 
-Conectar, sincronizar y Morosos comparten un presupuesto de **60 segundos** para DNS, conexión, autenticación, envío/ejecución, recepción y cierre SSH; también se comprueba el plazo al validar el inventario. El lector remoto recibe un presupuesto limitado al tiempo restante. Hay como máximo dos resoluciones DNS y cuatro trabajadores SSH pendientes en el proceso, todos daemon: un bloqueo no impide salir ni genera hilos sin límite. Nunca se reintenta una escritura automáticamente; un resultado no confirmado exige sincronizar.
+| Distribución | Ejecutable |
+| --- | --- |
+| Versión 1.0.0 original | `dist/SpicyOps-1.0.0-Windows/SpicyOps/SpicyOps.exe` |
+| Versión con rediseño visual | `dist/SpicyOps-redesign-Windows/SpicyOps/SpicyOps.exe` |
 
-En **Conexiones → Diagnosticar**, cada localidad comprueba acceso al puerto SSH, identidad del equipo, autenticación SSH, Python/librouteros, certificado TLS, lecturas API-SSL e inventario. El progreso aparece por etapa y termina con una orientación concreta. Si una etapa falla, las dependientes quedan como **No comprobada**. Una huella nueva se confirma en **Configurar**; una huella cambiada detiene el acceso y nunca se sustituye automáticamente.
+Ambas conservan la versión interna 1.0.0. Son paquetes preparados localmente, sin firma digital ni publicación remota. El selector **Oscuro / Claro** y las correcciones posteriores del formulario están en el código actual, pero todavía no se incorporaron al paquete del rediseño; su disponibilidad depende de la edición que abras.
 
-El resultado permanece guardado aparte de la sincronización, con fecha y hora. Al volver a la vista se identifica como histórico; al cambiar la configuración aparece desactualizado. Un inventario vacío válido no es un fallo de conexión. Las colas ambiguas o sin contadores producen advertencias. Diagnosticar no actualiza Analytics ni Clientes, no cambia el estado de conexión y no elimina accesos. En una localidad desconectada puede ser necesario volver a introducir las credenciales retiradas.
+## Conectar la primera localidad
 
-El diagnóstico es exclusivamente de lectura: no prueba escrituras ni acredita internet para los clientes. Comparte la exclusión por localidad con sincronización manual/automática, configuración y Morosos. Las demás localidades pueden seguir trabajando. El presupuesto es de 8 segundos por etapa, 25 para las lecturas API y 60 en total; incluye cierre de SSH y recuperación de diagnósticos interrumpidos. La resolución del sistema se espera de forma acotada en un hilo sin credenciales.
+Abre **Conexiones → Nueva localidad** y completa los accesos.
 
-Las pruebas controladas están en `portal/tests/test_diagnostics.py` y `portal/tests/test_connector.py`; no usan equipos reales. La validación física Raspberry → MikroTik sigue pendiente.
+### 1. Acceso a la Raspberry
 
-Dependencias de aplicación en `requirements.txt`; construcción en `requirements-build.txt`. Python usado para construir/probar: 3.12.14. El lector remoto mantiene sintaxis Python 3.11, sin dependencias binarias nuevas en Raspberry.
+| Campo | Qué indicar |
+| --- | --- |
+| Nombre de la localidad | Un nombre que te permita reconocerla. |
+| Dirección de la Raspberry | IP o nombre accesible por LAN o Tailscale, sin URL ni comandos. |
+| Puerto SSH | El puerto configurado; normalmente, 22. |
+| Usuario de Raspberry | La cuenta autorizada para SSH. |
+| Autenticación SSH | Contraseña o clave SSH de Windows. |
+| Contraseña o frase de clave | La contraseña de acceso o la frase de la clave, según el método elegido. |
 
-```powershell
-# Ejecutar fuentes (abre la ventana y prepara su estado automáticamente):
-.\.venv\Scripts\python.exe run_panel.py
-# Tests vigentes; no crean ni usan PostgreSQL:
-.\.venv\Scripts\python.exe manage.py test portal.tests --noinput
-# Recopilar avisos de terceros antes de empaquetar:
-.\.venv\Scripts\python.exe scripts/collect_notices.py
-# Reconstruir Windows:
-.\.venv\Scripts\python.exe scripts/build_windows.py
-# Comprobar correspondencia entre fuentes y paquete oficial:
-.\.venv\Scripts\python.exe scripts/check_windows_sources.py
-# Distribución oficial aislada (salir de ella antes de reconstruir):
-.\.venv\Scripts\python.exe scripts/build_windows.py --dist-dir dist/SpicyOps-1.0.0-Windows --work-dir build/release-1.0.0
-.\.venv\Scripts\python.exe scripts/smoke_windows.py --exe dist/SpicyOps-1.0.0-Windows/SpicyOps/SpicyOps.exe
-.\.venv\Scripts\python.exe scripts/package_windows.py --folder dist/SpicyOps-1.0.0-Windows/SpicyOps --archive dist/SpicyOps-1.0.0-Windows/SpicyOps-1.0.0-Windows.zip
+Si utilizas clave SSH, puedes indicar su archivo privado en Windows dentro de la configuración adicional. Si dejas la ruta vacía, se utiliza el agente SSH o las claves habituales disponibles.
+
+### 2. Acceso al MikroTik
+
+| Campo | Qué indicar |
+| --- | --- |
+| IP del MikroTik | Su IPv4 accesible desde la Raspberry. Vacío: se utiliza la puerta de enlace de la Raspberry. |
+| Usuario API del MikroTik | La cuenta autorizada para consultar el router. |
+| Contraseña API del MikroTik | La contraseña de esa cuenta. |
+| Python con librouteros en Raspberry | Ruta del intérprete que ya tiene esa dependencia. |
+| Certificado CA en Raspberry | Ruta del certificado CA existente. Es obligatoria. |
+
+Las rutas de Python y del certificado pertenecen a la Raspberry. La ruta de la clave SSH pertenece a Windows. `/usr/bin/python3` solo sirve si ese intérprete tiene `librouteros` disponible.
+
+### 3. Confirmar y leer
+
+1. Pulsa **Comprobar y conectar**.
+2. Compara la huella SSH mostrada con la que te proporcione el administrador por un medio confiable.
+3. Si coincide, pulsa **Confirmar huella y conectar**.
+4. Espera la comprobación y la importación de las colas individuales.
+
+Un cambio de huella previamente aceptada detiene el acceso. Verifica la identidad del equipo antes de continuar.
+
+Conectar y sincronizar son operaciones de lectura. No instalan servicios en Raspberry ni cambian planes, reglas o permisos del router.
+
+## Trabajar con varias localidades
+
+Agrega cada localidad desde **Conexiones → Nueva localidad**. Sus accesos, lecturas y notas permanecen separados, incluso cuando distintas redes repiten direcciones privadas.
+
+El selector superior permite cambiar de localidad. **Todos** abre Clientes con los servicios de las localidades conectadas, indicando localidad y fecha de lectura por fila. Las desconectadas siguen disponibles al seleccionarlas individualmente.
+
+En Conexiones puedes abrir, configurar, diagnosticar o desconectar cada localidad. Desconectar retira las contraseñas guardadas y conserva la última lectura y los datos complementarios. Para reconectar, configura el mismo perfil e introduce los accesos que falten.
+
+Los estados **Activa**, **Error de conexión** y **Desconectada** reflejan la última operación. Revisa también la fecha de lectura: un estado activo o una lectura guardada no garantizan disponibilidad actual.
+
+## Clientes
+
+La lista muestra el nombre del servicio, IP, plan de subida y bajada, consumo acumulado del contador y estado de la cola y de su suspensión. En **Todos** también muestra la localidad y la fecha de los datos.
+
+Puedes buscar por nombre, IP o localidad y elegir velocidades en **Mbps** o **MB/s**. Pulsa **Sincronizar clientes** para obtener una nueva lectura de la localidad seleccionada.
+
+### Editar datos complementarios
+
+Pulsa la flecha **↗ — Ver datos** para guardar nombre visible, contacto, ubicación y notas.
+
+Estos datos se conservan al sincronizar. La IP, las velocidades y los contadores proceden del MikroTik; editar un alias o una nota no cambia la configuración del router.
+
+### Revisar colas excluidas
+
+Si falta un servicio, abre **Revisar colas excluidas** para consultar su identificación, IP y motivo de exclusión.
+
+**Incluir en Clientes** permite incorporar una cola IPv4 individual válida filtrada como infraestructura. La inclusión es local y queda vinculada a localidad, identidad de la cola e IP. **Revertir inclusión** restaura el filtro. Un cambio de identidad o IP no hereda esa excepción.
+
+Las colas compartidas, ambiguas o con destinos inválidos requieren revisión en el router. Esta función no crea clientes manuales ni modifica MikroTik. Si la lectura guardada no tiene el detalle necesario, sincroniza primero.
+
+## Analytics y consumo
+
+Selecciona una localidad y pulsa **Actualizar lectura** para consultar los contadores actuales. **Actualizar y estimar** también obtiene una nueva lectura para las estimaciones por cliente.
+
+| Dato | Cómo interpretarlo |
+| --- | --- |
+| Consumo del contador | Subida y bajada acumuladas en las colas. No representa por sí solo el consumo del mes. |
+| Consumo observado | Diferencia válida entre contadores de dos lecturas consecutivas. Cada barra identifica su intervalo y fecha. |
+| Estimado en 24 horas | Aproximación del contador dividida entre el tiempo encendido del router y proyectada a un día. |
+| Estimado a 30 días | La misma aproximación, proyectada a 30 días a ritmo constante. |
+
+El tiempo encendido del router no confirma la edad real de cada contador. Las estimaciones no equivalen a consumo mensual medido ni deben utilizarse como facturación.
+
+La gráfica necesita al menos dos lecturas comparables y un intervalo suficiente. Tras la primera lectura, espera al menos un minuto antes de actualizar. Reinicios, resets, cambios de identidad y colas ambiguas pueden invalidar comparaciones o estimaciones. Cuando falta una base válida, el cálculo queda sin resultado.
+
+Se conservan hasta **1,440 lecturas por localidad**. El tiempo cubierto depende de la frecuencia de actualización; los periodos sin lecturas no se reconstruyen.
+
+Las unidades son decimales: **1 GB = 1,000,000,000 bytes** y **1 MB/s = 8 Mbps**. El plan muestra la velocidad configurada en la cola, no una prueba de velocidad de internet.
+
+## Actualización automática
+
+En la tarjeta de cada localidad, dentro de **Conexiones**:
+
+1. Marca **Actualización automática**.
+2. Elige **1, 5, 10, 15, 30 o 60 minutos**.
+3. Pulsa **Guardar**.
+
+Empieza desactivada, con 5 minutos seleccionados. Para pausarla, desmarca la opción y guarda. La preferencia se conserva al reiniciar. Desconectar la localidad detiene su programación efectiva; reconectarla permite retomarla.
+
+Cada tarjeta muestra la última lectura, la próxima actualización y el estado de programación. Los fallos conservan los últimos datos válidos y espacian los reintentos. Una lectura manual también ajusta el siguiente ciclo.
+
+Las actualizaciones continúan con SpicyOps abierto o en la bandeja. Se detienen al salir del programa, apagar o suspender la PC. Al reanudar no se recuperan todos los ciclos perdidos. SpicyOps no arranca automáticamente al encender Windows.
+
+Las vistas incorporan lecturas nuevas sin recargar toda la página. Si tienes un formulario sin guardar o una confirmación abierta, la actualización visual espera para conservar lo que estás haciendo.
+
+La actualización automática solo consulta datos; nunca suspende ni reactiva clientes.
+
+## Suspender o reactivar clientes
+
+El interruptor **Suspender** muestra **Sí** cuando la restricción está activa y **No** cuando está desactivada.
+
+1. Pulsa el interruptor del servicio.
+2. Revisa localidad, cliente e IP en la confirmación.
+3. Confirma la suspensión o reactivación.
+4. Espera la lectura que confirma el resultado.
+
+Suspender agrega la IPv4 individual a la lista exacta `Morosos` o habilita su entrada existente. Reactivar deshabilita su entrada individual sin borrarla. Antes de escribir se comprueba de nuevo el inventario del router.
+
+La operación requiere escritura y reglas de bloqueo previamente configuradas. Restricciones compartidas, dinámicas, duplicadas o ambiguas impiden el cambio individual. SpicyOps no modifica rangos, subredes, planes, reglas de firewall ni permisos.
+
+El estado de `Morosos` no acredita por sí solo un corte de internet. El efecto depende de las reglas del router; IPv6, FastTrack o sesiones existentes pueden permitir tráfico. Ante un resultado incierto, sincroniza antes de reintentar. Las escrituras no se reintentan automáticamente.
+
+## Diagnosticar una conexión
+
+Abre **Conexiones → Diagnosticar** en la localidad correspondiente. Se comprueban por etapas el puerto SSH, identidad y autenticación, Python y `librouteros`, certificado, lecturas API-SSL e inventario.
+
+Si falla una etapa, las dependientes aparecen como **No comprobada**. Sigue la orientación mostrada. En una localidad desconectada puede ser necesario introducir de nuevo los accesos desde **Configurar**.
+
+El resultado conserva fecha y hora. Aparece como histórico al volver a la vista y como desactualizado si cambias la configuración. Diagnosticar no actualiza Analytics ni Clientes y no prueba escrituras o acceso a internet de los abonados.
+
+## Guardado y privacidad
+
+Localidades, accesos, lecturas, notas, diagnósticos y preferencias se guardan automáticamente en:
+
+```text
+%LOCALAPPDATA%\SpicyOps
 ```
 
-`portal/` contiene interfaz, conector, cálculos y estado privado. `spicyops/portal_settings.py` es la configuración por defecto. Para pruebas de desarrollo se puede elegir otra carpeta privada con `run_panel.py --state-dir RUTA`; nunca usar una carpeta pública.
+El estado está cifrado y, en el ejecutable, su clave queda protegida mediante la cuenta Windows. No compartas esa carpeta, sus claves ni los enlaces temporales de apertura. Introduce las credenciales únicamente en el programa.
 
-[Encargo vigente](docs/encargo-panel-conectado.md) · [Verificación del rework](docs/verificacion-panel-conectado.md) · [Guía de agentes](AGENTS.md).
+SpicyOps utiliza un servidor local accesible solo desde la propia PC. Cada instalación mantiene su información de manera independiente; no es un portal público ni un sistema de datos compartidos entre administradores.
 
-Guía visual de localidades, Tailscale, SSH y API-SSL: [documento editable](docs/guia-visual-conexiones.md) · [PDF histórico con diagramas](output/pdf/SpicyOps-guia-visual.pdf).
+## Respaldos y recuperación
 
-## Alcance y estado real
+Abre **Respaldos** en el pie de la aplicación.
 
-No se ha publicado un sitio web ni se ha instalado el programa en Raspberry. El ejecutable incluye el cliente SSH; requiere acceso de red existente y la configuración de lectura de cada Raspberry/MikroTik. La importación viene de **colas simples RouterOS 6/7**; PPPoE, RADIUS y otros modelos requieren un adaptador distinto. No se acredita compatibilidad física v7 sin probarla.
+### Crear un respaldo portable
 
-La edad de una cola/contador no se deduce del uptime. La gráfica descarta comparaciones afectadas por reinicios o resets de contador; sus barras muestran diferencias observadas, no proyecciones ni facturación. No se inventan datos para llenar la interfaz.
+1. Introduce una contraseña de **al menos 12 caracteres**.
+2. Pulsa **Descargar respaldo portable**.
+3. Guarda el archivo `.spicybackup` en un lugar seguro y la contraseña por separado.
 
-Analytics compara subida y bajada entre lecturas consecutivas de la misma época de arranque. Un reset conocido sigue invalidando la aproximación aunque el contador recupere el valor anterior y aunque rote el historial retenido. Al cambiar de router/arranque se inicia otra época; esto no demuestra la edad real de los contadores.
+Incluye accesos, localidades, notas e historial cifrados. Sin su contraseña no se puede recuperar. Exporta uno antes de actualizar, cambiar de PC o restaurar datos.
 
-La cuenta de Lulu y su ensayo siguen cerrados según la documentación previa. No se han elevado permisos ni reabierto escrituras. `config-mikro/` y `config-antenasyclientes/` se conservan intactas e ignoradas. El portal cautivo continúa fuera de alcance.
+### Copias locales automáticas
 
-## Documentación histórica
+Antes de guardar cambios se conserva una copia del estado anterior, como máximo una por hora, hasta cinco copias y 512 MiB en total.
 
-El primer encargo, su arquitectura de tareas y sus verificaciones permanecen en `docs/encargo-mvp-local.md`, `docs/mvp-local.md` y `docs/verificacion-mvp-local.md`. El código `ops/`, `agent/` y la suite `tests/` de esa etapa no están expuestos por el producto nuevo. La base y el simulador ficticios se retiraron; no arrancan con SpicyOps. La suite histórica solo puede ejecutarse con PostgreSQL de pruebas explícito y `--settings=spicyops.settings` más `requirements-legacy.txt`.
+Estas copias requieren la clave original de la cuenta Windows y pueden no incluir los cambios más recientes. Utiliza un respaldo portable para trasladar datos a otra cuenta o PC.
 
-Contexto real anterior: [arquitectura](docs/arquitectura.md), [adaptación SpicyNet](docs/adaptacion-spicynet.md), [preparación MikroTik](docs/preparacion-mikrotik.md) y [ensayo cerrado](docs/prueba-cliente-011.md). Son evidencia, no instrucciones para repetir comandos.
+### Restaurar datos
 
-Instalación y actualización en Windows limpio: **excluidas expresamente por el usuario**. Se comprueba actualización local con estados temporales sintéticos. Titular, licencia del proyecto y canal de soporte requieren decisión del propietario.
+Selecciona un respaldo local válido y pulsa **Restaurar respaldo seleccionado**, o utiliza **Importar respaldo portable** con su archivo y contraseña. Revisa y confirma el reemplazo de los datos actuales.
+
+La restauración conserva los archivos originales en una subcarpeta `original-...` de los datos privados. Las localidades quedan desconectadas, conservando accesos, historial, notas y preferencias. Reconéctalas cuando estés listo.
+
+Si el estado o la clave no se pueden abrir, se presenta la pantalla de recuperación sin sustituir el original por datos vacíos. No borres archivos para intentar resolverlo. Sin una clave válida o un respaldo portable con contraseña no es posible descifrar los datos.
+
+Los originales conservados no se eliminan automáticamente. Retíralos únicamente después de comprobar la recuperación y disponer de un respaldo válido.
+
+## Cambiar de PC o cuenta Windows
+
+1. Exporta un respaldo portable desde la cuenta original.
+2. Abre la misma versión de SpicyOps en el destino.
+3. En **Respaldos → Importar respaldo portable**, selecciona el archivo e introduce la contraseña.
+4. Confirma y comprueba localidades, notas e historial.
+5. Ajusta las rutas de claves SSH y reconecta las localidades.
+
+Las claves SSH de Windows y los certificados de Raspberry no se incluyen en el respaldo. Deben estar disponibles en sus equipos correspondientes. Copiar solamente la carpeta privada a otra cuenta Windows no sustituye este procedimiento.
+
+## Actualizar SpicyOps
+
+1. Exporta un respaldo portable y conserva la contraseña.
+2. Selecciona **Salir de SpicyOps** y espera a que termine el proceso.
+3. Extrae el paquete nuevo en otra carpeta y conserva la versión anterior.
+4. Abre el nuevo ejecutable con la misma cuenta Windows.
+5. Comprueba tus localidades y datos antes de continuar.
+
+La nueva versión utiliza la misma carpeta de datos del usuario. Evita abrir versiones distintas simultáneamente sobre esos datos. Volver a una versión anterior requiere un respaldo de formato compatible; no hay conversión automática de formatos futuros.
+
+## Cerrar el programa
+
+Cerrar la ventana permite que SpicyOps continúe en la bandeja del sistema y mantenga las actualizaciones automáticas.
+
+Para detenerlo por completo, utiliza **Salir de SpicyOps** desde la bandeja o desde **Respaldos → Cerrar SpicyOps**. Espera a que terminen las lecturas en curso y se guarden sus resultados.
+
+## Solución de problemas
+
+| Problema | Qué revisar |
+| --- | --- |
+| No abre el programa | Extrae el paquete completo y conserva `_internal` junto al ejecutable. |
+| No conecta con Raspberry | Revisa dirección, puerto, acceso LAN/Tailscale y credenciales. Ejecuta Diagnosticar. |
+| Cambió la huella SSH | Verifica con el administrador la identidad del equipo antes de aceptar otra huella. |
+| Falla Python o librouteros | Confirma la ruta del intérprete de Raspberry que tiene la dependencia. |
+| Falla el certificado | Revisa ruta de la CA, validez y coincidencia del certificado con el destino. |
+| El botón de conexión parece no responder | Despliega la configuración adicional y completa Python y CA obligatoria. Revisa los errores del formulario. |
+| No aparecen clientes | Revisa colas excluidas y confirma que existan colas simples individuales compatibles. Un inventario vacío puede ser válido. |
+| No hay gráfica o estimaciones | Obtén lecturas comparables y revisa intervalos insuficientes, reinicios, resets o colas ambiguas. |
+| Los datos parecen antiguos | Consulta su fecha, sincroniza y revisa la programación automática. |
+| No permite suspender o reactivar | Revisa permisos de escritura y restricciones compartidas, dinámicas, duplicadas o ambiguas. |
+| Una suspensión no queda confirmada | Sincroniza antes de reintentar y comprueba el estado de Morosos. |
+| No se guarda un cambio | Revisa espacio libre y permisos de la carpeta de datos; después vuelve a intentarlo. |
+| No abre los datos tras cambiar de cuenta | Importa un respaldo portable con su contraseña o utiliza la cuenta original. |
+
+## Compatibilidad y disponibilidad
+
+SpicyOps importa servicios de **colas simples de RouterOS 6 y 7**. PPPoE, RADIUS y otros modelos de inventario no están incluidos. Tampoco incorpora facturación, registro de pagos, cobros, suspensión automática por fecha ni portal cautivo.
+
+La aplicación y el ejecutable se han comprobado localmente con datos de prueba y conexiones SSH controladas. La validación física completa con Raspberry, MikroTik y reglas de bloqueo sigue pendiente, al igual que la comprobación en un Windows limpio. La compatibilidad física con RouterOS 7 aún no está acreditada.
+
+La licencia de uso propia y el canal de soporte están pendientes de definición. Consulta los [avisos y licencias de componentes de terceros](docs/THIRD-PARTY-NOTICES.txt) incluidos con el proyecto.

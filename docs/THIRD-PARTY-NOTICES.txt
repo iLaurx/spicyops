@@ -36,3 +36,7 @@ https://docs.python.org/3/license.html
 PyInstaller: GPL con excepción del bootloader; no sustituye licencias de dependencias.
 Paramiko declara LGPL-2.1; pystray declara LGPLv3 en metadatos.
 Revisar condiciones de redistribución con el propietario antes de publicar; no se ha decidido licencia propia.
+
+Tipografías locales (SIL Open Font License 1.1): Barlow, Barlow Semi Condensed y JetBrains Mono.
+Procedencia: https://github.com/google/fonts/tree/main/ofl/
+Textos de licencia incluidos en portal/static/portal/fonts/*-OFL.txt.

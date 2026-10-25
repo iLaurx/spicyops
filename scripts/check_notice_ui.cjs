@@ -4,7 +4,8 @@ const fs = require('node:fs');
 const assert = require('node:assert/strict');
 
 (async()=>{
-  const runtime=JSON.parse(fs.readFileSync('.local/ui-cleanup-preview/runtime.json','utf8'));
+  fs.mkdirSync('build/interfaz-limpia',{recursive:true});
+  const runtime=JSON.parse(fs.readFileSync(process.argv[2]||'.local/ui-cleanup-preview/runtime.json','utf8'));
   const browser=await chromium.launch({channel:'msedge',headless:true});
   try {
     const page=await browser.newPage({viewport:{width:1280,height:900}});

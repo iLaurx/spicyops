@@ -167,7 +167,7 @@ class AppTests(SimpleTestCase):
         response=self.client.get('/')
         self.assertContains(response,'Analytics')
         self.assertContains(response,'Clientes')
-        self.assertContains(response,'Conectar mi primera localidad')
+        self.assertContains(response,'Nueva localidad')
         self.assertNotContains(response,'Marina')
         self.assertNotContains(response,'2000/4000')
         self.assertEqual(Store().read()['profiles'],{})

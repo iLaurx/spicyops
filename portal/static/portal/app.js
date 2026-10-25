@@ -35,6 +35,27 @@ document.querySelectorAll('[data-notice]:not([data-notice-bound])').forEach(noti
 }
 function bindPanel(){
 bindNotices();
+const connectionForm=document.getElementById('connect-form');
+if(connectionForm && !connectionForm.dataset.validationBound){
+  connectionForm.dataset.validationBound='true';
+  const summary=connectionForm.querySelector('[data-validation-summary]');
+  // Native validation runs before submit, including fields inside closed details.
+  connectionForm.addEventListener('invalid',event=>{
+    let section=event.target.closest('details');
+    while(section){section.open=true;section=section.parentElement.closest('details');}
+    event.target.setAttribute('aria-invalid','true');
+    if(summary){
+      const fields=[...connectionForm.elements].filter(field=>field.willValidate && !field.validity.valid);
+      const names=fields.map(field=>field.labels?.[0]?.textContent.trim().replace(/:$/,'')).filter(Boolean);
+      summary.textContent='Revisa los campos obligatorios o inválidos: '+names.join(', ')+'.';
+      summary.hidden=false;
+    }
+  },true);
+  connectionForm.addEventListener('input',event=>{
+    if(event.target.validity?.valid)event.target.removeAttribute('aria-invalid');
+    if(summary && connectionForm.querySelectorAll(':invalid').length===0)summary.hidden=true;
+  });
+}
 document.querySelectorAll('[data-autosubmit]:not([data-bound])').forEach(select=>{select.dataset.bound='true';select.addEventListener('change',()=>{if(select.value==='all' && select.dataset.allUrl)select.form.action=select.dataset.allUrl;select.form.submit();});});
 document.querySelectorAll('form:not([data-bound])').forEach(form=>{form.dataset.bound='true';form.addEventListener('submit',()=>{
   const button=form.querySelector('[data-busy]');
